@@ -14,7 +14,7 @@ player_score = 0
 dealer_score = 0
 player_cards = []
 dealer_cards = []
-deck         = [] # колода
+deck         = []
 heading_msg  = ""
 
 # keyboard
@@ -24,7 +24,16 @@ new_game_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(new_game_b
 # get help
 @dp.message_handler(commands=['help'])
 async def info_help(message: types.Message):
-    await message.answer("Правила игры в 21 (очко)\nhttps://ru.wikipedia.org/wiki/%D0%9E%D1%87%D0%BA%D0%BE_(%D0%B8%D0%B3%D1%80%D0%B0)\nСвязь с разработчиком: @kallmeroma")
+    await message.answer("Связаться с разработчиком: @kallmeroma")
+
+@dp.message_handler(commands=['rules'])
+async def rules(message: types.Message):
+    await message.answer("""♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n
+Мы предоставим краткий свод правил для тех, кто никогда не играл в блэкджек.\n
+Магическое число для блэкджека — 21.\nЗначения всех карт, розданных игроку, складываются, и если сумма превышает 21, игрок вылетает и мгновенно проигрывает.\n
+Если игрок получает ровно 21, игрок выигрывает у дилера.\nВ противном случае для выигрыша сумма карт игрока должна быть больше суммы карт дилера.\n
+Стоимости карты:.\n
+- Валет - 2 очка;\n- Дама - 3 очка;\n- Король - 4 очка;\n- Туз - 11 очков (если сумма карт больше 21, может стоить 1 очко);\nСтоимость остальных карт определяется их номиналом.""")
 
 # start command
 @dp.message_handler(commands=['start'])
@@ -36,12 +45,19 @@ async def process_start_game(message: types.Message):
     if (not user):
         # register user
         db.add_user(int(message.from_user.id))
+
+    if user[0][2] < 1:
+        user = list(user[0])
+        user[2] = 100
+        user = tuple([user])
+        db.update_user(message.from_user.id, 100)
     
     # keyboard
     game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🤖")
     game_type_markup_online = types.KeyboardButton("Играть с другом 👨‍🦰 (в разработке)")
     game_type_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
     
+    await bot.send_sticker(message.from_user.id, "CAACAgIAAxkBAAEEtKFie91Ts3FZ99cztCfWqfxAqNn4FgACaQIAArrAlQUw5zOp4KLsaCQE")
     await message.answer("Выберите тип игры", reply_markup=game_type_markup)
 
 # main game logic
@@ -52,6 +68,12 @@ async def process_handler(message: types.Message):
         if message.text == "Новая игра":
             global user
             user = db.load_user(message.from_user.id)
+
+            if user[0][2] < 1:
+                user = list(user[0])
+                user[2] = 100
+                user = tuple([user])
+                db.update_user(message.from_user.id, 100)
 
             # keyboard
             game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🤖")
@@ -144,7 +166,7 @@ async def process_handler(message: types.Message):
                 global new_game_markup
                 total_win = float(pet)*float(1.5)+user[0][2]
                 db.update_user(message.from_user.id, total_win)
-                await message.answer(f"У вас Блэк-Джек! Вы победили", reply_markup=new_game_markup)
+                await message.answer(f"У вас Блэк-Джек! Вы победили! 🥃", reply_markup=new_game_markup)
 
         # if player decides to go on
         if (message.text == "Еще"):
@@ -178,7 +200,7 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили!", reply_markup=new_game_markup)
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
                 return;
@@ -243,7 +265,7 @@ async def process_handler(message: types.Message):
                         await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                         
                         await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                        await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили", reply_markup=new_game_markup)
+                        await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
 
                         db.update_user(message.from_user.id, total_win)
                         return
@@ -257,7 +279,7 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили", reply_markup=new_game_markup)
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
 
@@ -272,6 +294,14 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы проиграли", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
+
+            # if draw
+            if (dealer_score == player_score):
+                await bot.send_sticker(message.chat.id, sticker=open("static/images/out_dealer_open.webp", 'rb').read())
+                await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
+                
+                await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nНичья", reply_markup=new_game_markup)
 
         # if player gives up
         if (message.text == "Сдаюсь"):

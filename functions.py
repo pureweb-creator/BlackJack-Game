@@ -23,7 +23,7 @@ def render_image(img_path, img_count, image_name):
         if (i==1): offset_list.append((15, (bg_h - img_h) // 2))
         if (i>=2): offset_list.append(((offset_left*i + img_w//4*(i-1)+10 ), (bg_h - img_h) // 2))
 
-    # create image with offsets 
+    # create image with offsets
     for i in range(len(offset_list)):
         background.paste(img_list[i], offset_list[i])
 
