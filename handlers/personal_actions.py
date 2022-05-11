@@ -26,13 +26,18 @@ new_game_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(new_game_b
 async def info_help(message: types.Message):
     await message.answer("Связаться с разработчиком: @kallmeroma")
 
+@dp.message_handler(commands=['balance'])
+async def get_balance(message: types.Message):
+    user = db.load_user(message.from_user.id)
+    await message.answer("💰 Баланс: "+ str(user[0][2]))
+
 @dp.message_handler(commands=['rules'])
 async def rules(message: types.Message):
     await message.answer("""♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n
 Мы предоставим краткий свод правил для тех, кто никогда не играл в блэкджек.\n
 Магическое число для блэкджека — 21.\nЗначения всех карт, розданных игроку, складываются, и если сумма превышает 21, игрок вылетает и мгновенно проигрывает.\n
 Если игрок получает ровно 21, игрок выигрывает у дилера.\nВ противном случае для выигрыша сумма карт игрока должна быть больше суммы карт дилера.\n
-Стоимости карты:.\n
+Стоимости карт:
 - Валет - 2 очка;\n- Дама - 3 очка;\n- Король - 4 очка;\n- Туз - 11 очков (если сумма карт больше 21, может стоить 1 очко);\nСтоимость остальных карт определяется их номиналом.""")
 
 # start command
@@ -45,12 +50,16 @@ async def process_start_game(message: types.Message):
     if (not user):
         # register user
         db.add_user(int(message.from_user.id))
+        db.is_game(message.from_user.id, True)
 
     if user[0][2] < 1:
         user = list(user[0])
         user[2] = 100
         user = tuple([user])
-        db.update_user(message.from_user.id, 100)
+        db.update_user(message.from_user.id, True, 100)
+        db.is_game(message.from_user.id, True)
+
+    else: db.is_game(message.from_user.id, True)
     
     # keyboard
     game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🤖")
@@ -74,6 +83,8 @@ async def process_handler(message: types.Message):
                 user[2] = 100
                 user = tuple([user])
                 db.update_user(message.from_user.id, 100)
+                db.is_game(message.from_user.id, True)
+            else: db.is_game(message.from_user.id, True)
 
             # keyboard
             game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🤖")
@@ -82,13 +93,19 @@ async def process_handler(message: types.Message):
             await message.answer("Выберите тип игры", reply_markup=game_type_markup)
 
         if message.text == "Играть с компьютером 🤖":
+            user = db.load_user(message.from_user.id)
+            if (user[0][3] == False):
+                await message.answer("Для начала начните новую игру")
+                return;
+                
             # keyboard
-            balance_btn = types.KeyboardButton("Баланс: "+ str(user[0][2]))
+            balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user[0][2]))
             pet_1_btn   = types.KeyboardButton("1 💲")
             pet_10_btn  = types.KeyboardButton("10 💲")
             pet_25_btn  = types.KeyboardButton("25 💲")
             pet_50_btn  = types.KeyboardButton("50 💲")
             pet_100_btn = types.KeyboardButton("100 💲")
+            pet_all_in_btn = types.KeyboardButton(str(user[0][2]) + " 💲")
 
             sample_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
                 pet_1_btn,
@@ -96,11 +113,17 @@ async def process_handler(message: types.Message):
                 pet_25_btn,
                 pet_50_btn,
                 pet_100_btn,
+                pet_all_in_btn,
                 balance_btn
             )
             await message.answer("Сделайте ставку", reply_markup=sample_markup)
 
         if ("💲" in message.text):
+            user = db.load_user(message.from_user.id)
+            if (user[0][3] == False):
+                await message.answer("Для начала начните новую игру")
+                return;
+
             '''Start game'''
             global dealer_score, player_score, player_cards, dealer_cards, deck, pet, heading_msg
             # reset all our local variables
@@ -164,12 +187,21 @@ async def process_handler(message: types.Message):
             # Player gets a blackjack  
             if (player_score == 21):
                 global new_game_markup
+                current_win = float(pet)*float(1.5)
                 total_win = float(pet)*float(1.5)+user[0][2]
                 db.update_user(message.from_user.id, total_win)
-                await message.answer(f"У вас Блэк-Джек! Вы победили! 🥃", reply_markup=new_game_markup)
+                db.is_game(message.from_user.id, False)
+                await message.answer(f"У вас Блэк-Джек! Вы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=new_game_markup)
 
         # if player decides to go on
         if (message.text == "Еще"):
+            # global user
+            user = db.load_user(message.from_user.id)
+            if (user[0][3] == False):
+                await message.answer("Для начала начните новую игру")
+                return;
+
+
             # randomly dealing a card for player
             player_card = random.choice(deck)
             player_cards.append(player_card)
@@ -194,15 +226,17 @@ async def process_handler(message: types.Message):
 
             # if player wons
             if (player_score == 21):
+                current_win = float(pet)*float(1.5)
                 total_win = float(pet)+user[0][2] # update win
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_dealer_open.webp", 'rb').read())
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
+                db.is_game(message.from_user.id, False)
                 return;
 
             # if player picks too many cards
@@ -221,9 +255,10 @@ async def process_handler(message: types.Message):
                     await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                     
                     await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                    await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nПеребор! Вы проиграли", reply_markup=new_game_markup)
+                    await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nПеребор! Вы проиграли ❌\nПроигрыш: -{float(pet)}", reply_markup=new_game_markup)
 
                     db.update_user(message.from_user.id, total_win)
+                    db.is_game(message.from_user.id, False)
                     return;
 
             await bot.send_sticker(message.chat.id, sticker=open("static/images/out_dealer_close.webp", 'rb').read())
@@ -234,6 +269,11 @@ async def process_handler(message: types.Message):
 
         # if player decides to stand
         if (message.text == "Стоп"):
+
+            user = db.load_user(message.from_user.id)
+            if (user[0][3] == False):
+                await message.answer("Для начала начните новую игру")
+                return;
             
             img_path_dealer = []
             
@@ -259,29 +299,33 @@ async def process_handler(message: types.Message):
                     
                     # if dealer loses, player win
                     if (dealer_score > 21):
+                        current_win = float(pet)*float(1.5)
                         total_win = float(pet)+user[0][2] # update player win
 
                         await bot.send_sticker(message.chat.id, sticker=open("static/images/out_dealer_open.webp", 'rb').read())
                         await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                         
                         await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                        await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
+                        await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=new_game_markup)
 
                         db.update_user(message.from_user.id, total_win)
+                        db.is_game(message.from_user.id, False)
                         return
                     break
                 
             # if dealer loses, player win
             if (dealer_score < player_score):
+                current_win = float(pet)*float(1.5)
                 total_win = float(pet)+user[0][2] # update player win
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_dealer_open.webp", 'rb').read())
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃", reply_markup=new_game_markup)
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
+                db.is_game(message.from_user.id, False)
 
             # if player loses, dealer win
             if (dealer_score > player_score):
@@ -291,9 +335,10 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы проиграли", reply_markup=new_game_markup)
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы проиграли ❌\nПроигрыш: -{float(pet)}", reply_markup=new_game_markup)
 
                 db.update_user(message.from_user.id, total_win)
+                db.is_game(message.from_user.id, False)
 
             # if draw
             if (dealer_score == player_score):
@@ -305,6 +350,12 @@ async def process_handler(message: types.Message):
 
         # if player gives up
         if (message.text == "Сдаюсь"):
+
+            user = db.load_user(message.from_user.id)
+            if (user[0][3] == False):
+                await message.answer("Для начала начните новую игру")
+                return;
+
             total_win = user[0][2]-float(pet) # update loss
 
             render_image([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, "out_dealer_open.webp")
@@ -313,6 +364,7 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
             
             await bot.send_sticker(message.chat.id, sticker=open("static/images/out_player.webp", 'rb').read())
-            await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы сдались :(", reply_markup=new_game_markup)
+            await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы сдались :(\nПроигрыш: -{float(pet)}", reply_markup=new_game_markup)
 
             db.update_user(message.from_user.id, total_win)
+            db.is_game(message.from_user.id, False)

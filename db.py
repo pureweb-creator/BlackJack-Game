@@ -21,6 +21,11 @@ class DBh:
         with self.connection:
             return self.cursor.execute('UPDATE `user` SET `balance` = ? WHERE `user_id` = ?', (balance, user_id,))
 
+    def is_game(self, user_id, is_game):
+        '''stop or start game'''
+        with self.connection:
+            return self.cursor.execute('UPDATE `user` SET `is_game` = ? WHERE `user_id` = ?', (is_game, user_id,))
+
 
     def close(self):
         '''Close connection with DB'''
