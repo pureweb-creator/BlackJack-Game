@@ -40,8 +40,14 @@ async def rules(message: types.Message):
 async def process_start_game(message: types.Message):
     '''bot start'''
     # register user if not exists
-    if (not db.load_user(message.from_user.id)):
+    user = db.load_user(message.from_user.id)
+    if (not user):
         db.add_user(int(message.from_user.id))
+
+    if (user['is_game'] == True):
+        await message.answer("Для начала закончите старую игру")
+        return
+
     db.update('user','is_game = ?','user_id = ?',(False,message.from_user.id,))
     await message.answer("♦️ Добро пожаловать в блэк-джек ♦️", reply_markup=main_menu_markup)
 
@@ -49,16 +55,19 @@ async def process_start_game(message: types.Message):
 @dp.message_handler(content_types=["text"])
 async def process_handler(message: types.Message):
     '''button handlers'''
-
     if message.chat.type == "private":
         if message.text == "Начать новую игру 🎮":
+            user = db.load_user(message.from_user.id)
+            if (user['is_game'] ==  True):
+                await message.answer("Для начала закончите старую игру")
+                return
+
             # updating deck of cards
             with open('static/deck_of_cards.json','r', encoding="utf-8") as input_f:
                 deck = json.load(input_f)
             input_f.close()
 
             db.update(table='user', set='deck = ?', where='user_id = ?', values=(str(deck), message.from_user.id,))
-            user = db.load_user(message.from_user.id)
 
             # update player score is he lost everything
             if user['balance'] < 1:
@@ -70,7 +79,8 @@ async def process_handler(message: types.Message):
             # keyboard
             kbd = Keyboard()
             game_type_markup = kbd.game_type()
-            await message.answer("Выберите тип игры", reply_markup=game_type_markup)
+            await bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEEtKFie91Ts3FZ99cztCfWqfxAqNn4FgACaQIAArrAlQUw5zOp4KLsaCQE")
+            await message.answer("Добро пожаловать!\nВыберите тип игры", reply_markup=game_type_markup)
 
         if message.text == "Играть с компьютером 🧠":
             user = db.load_user(message.from_user.id)
@@ -111,8 +121,8 @@ async def process_handler(message: types.Message):
 
             db.update(table='user', set='pet = ?',where='user_id = ?', values=(pet, message.from_user.id,))
             user = db.load_user(message.from_user.id)
-        
-            if (int(pet) > int(user['pet'])):
+
+            if (int(pet) > int(user['balance'])):
                 await message.answer("На вашем балансе недостаточно средств.")
                 return
 
