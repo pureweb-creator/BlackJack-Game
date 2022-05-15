@@ -11,9 +11,11 @@ class DBh:
         '''load user if exists'''
         with self.connection:
             user = self.cursor.execute('SELECT * FROM `user` WHERE `user_id` = ?', (user_id,)).fetchall()
-            user = [{k: item[k] for k in item.keys()} for item in user]
-            return user[0]
 
+            if user:
+                user = [{k: item[k] for k in item.keys()} for item in user]
+                return user[0]
+            return False
 
     def add_user(self, user_id):
         '''register user'''
