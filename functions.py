@@ -1,6 +1,6 @@
 from PIL import Image
 
-def render_image(img_path, img_count, image_name):
+def render_image(img_path, img_count, img_name):
     img_list = []
 
     # create image list
@@ -9,9 +9,7 @@ def render_image(img_path, img_count, image_name):
         current_image = current_image.resize((70,103),Image.ANTIALIAS)
         img_list.append(current_image)
     
-    img_size     = Image.open("static/images/2_of_clubs.png", "r")
-    img_size     = img_size.resize((70,103), Image.ANTIALIAS)
-    img_w, img_h = img_size.size
+    img_w, img_h = (70, 103)
 
     background  = Image.open('static/images/bg.png') # create bg
     bg_w, bg_h  = background.size
@@ -27,4 +25,4 @@ def render_image(img_path, img_count, image_name):
     for i in range(len(offset_list)):
         background.paste(img_list[i], offset_list[i])
 
-    background.save(f'static/images/{image_name}', format='webp')
+    background.save(f'static/images/{img_name}', format='webp')

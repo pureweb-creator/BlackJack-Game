@@ -4,6 +4,7 @@ class DBh:
     def __init__(self, database):
         '''Connecting to DB and saving connection cursor'''
         self.connection = sqlite3.connect(database)
+        self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
 
     def load_user(self, user_id):
@@ -16,16 +17,10 @@ class DBh:
         with self.connection:
             return self.cursor.execute('INSERT INTO `user` (`user_id`) VALUES (?)', (user_id,))
 
-    def update_user(self, user_id, balance):
-        '''update user balance'''
+    def update(self, table, set, where, values):
+        '''update data'''
         with self.connection:
-            return self.cursor.execute('UPDATE `user` SET `balance` = ? WHERE `user_id` = ?', (balance, user_id,))
-
-    def is_game(self, user_id, is_game):
-        '''stop or start game'''
-        with self.connection:
-            return self.cursor.execute('UPDATE `user` SET `is_game` = ? WHERE `user_id` = ?', (is_game, user_id,))
-
+            return self.cursor.execute(f'UPDATE {table} SET {set} WHERE {where}', values)
 
     def close(self):
         '''Close connection with DB'''
