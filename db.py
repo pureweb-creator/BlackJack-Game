@@ -10,7 +10,10 @@ class DBh:
     def load_user(self, user_id):
         '''load user if exists'''
         with self.connection:
-            return self.cursor.execute('SELECT * FROM `user` WHERE `user_id` = ?', (user_id,)).fetchall()
+            user = self.cursor.execute('SELECT * FROM `user` WHERE `user_id` = ?', (user_id,)).fetchall()
+            user = [{k: item[k] for k in item.keys()} for item in user]
+            return user[0]
+
 
     def add_user(self, user_id):
         '''register user'''

@@ -41,13 +41,13 @@ class Keyboard:
 
     def pet(self, user):
 
-        balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user[0][2]))
+        balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user['balance']))
         pet_1_btn   = types.KeyboardButton("1 🪙")
         pet_10_btn  = types.KeyboardButton("10 🪙")
         pet_25_btn  = types.KeyboardButton("25 🪙")
         pet_50_btn  = types.KeyboardButton("50 🪙")
         pet_100_btn = types.KeyboardButton("100 🪙")
-        pet_all_in_btn = types.KeyboardButton(str(user[0][2]) + " 🪙")
+        pet_all_in_btn = types.KeyboardButton(f"Ва-банк! 🤑 ({user['balance']})")
 
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
             pet_1_btn,
