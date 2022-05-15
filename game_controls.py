@@ -40,7 +40,6 @@ class Keyboard:
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
 
     def pet(self, user):
-
         balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user['balance']))
         pet_1_btn   = types.KeyboardButton("1 🪙")
         pet_10_btn  = types.KeyboardButton("10 🪙")
