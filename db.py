@@ -11,16 +11,15 @@ class DBh:
         '''load user if exists'''
         with self.connection:
             user = self.cursor.execute('SELECT * FROM `user` WHERE `user_id` = ?', (user_id,)).fetchall()
-
             if user:
                 user = [{k: item[k] for k in item.keys()} for item in user]
                 return user[0]
             return False
 
-    def add_user(self, user_id):
+    def add_user(self, user_id, user_name, user_lastname):
         '''register user'''
         with self.connection:
-            return self.cursor.execute('INSERT INTO `user` (`user_id`) VALUES (?)', (user_id,))
+            return self.cursor.execute('INSERT INTO `user` (`user_id`, `user_name`, `user_lastname`) VALUES (?,?,?)', (user_id, user_name, user_lastname,))
 
     def update(self, table, set, where, values):
         '''update data'''

@@ -42,9 +42,9 @@ async def process_start_game(message: types.Message):
     # register user if not exists
     user = db.load_user(message.from_user.id)
     if (not user):
-        db.add_user(int(message.from_user.id))
-
-    if (user['is_game'] == True):
+        db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
+        
+    elif (user['is_game'] == True):
         await message.answer("Для начала закончите старую игру")
         return
 
@@ -57,8 +57,9 @@ async def process_handler(message: types.Message):
     '''button handlers'''
     if message.chat.type == "private":
         if message.text == "Начать новую игру 🎮":
+            
             user = db.load_user(message.from_user.id)
-            if (user['is_game'] ==  True):
+            if (user['is_game'] == True):
                 await message.answer("Для начала закончите старую игру")
                 return
 
@@ -80,7 +81,7 @@ async def process_handler(message: types.Message):
             kbd = Keyboard()
             game_type_markup = kbd.game_type()
             await bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEEtKFie91Ts3FZ99cztCfWqfxAqNn4FgACaQIAArrAlQUw5zOp4KLsaCQE")
-            await message.answer("Добро пожаловать!\nВыберите тип игры", reply_markup=game_type_markup)
+            await message.answer("Выберите тип игры", reply_markup=game_type_markup)
 
         if message.text == "Играть с компьютером 🧠":
             user = db.load_user(message.from_user.id)
@@ -371,6 +372,8 @@ async def process_handler(message: types.Message):
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
                 user = db.load_user(message.from_user.id)
                 await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {user['player_score']}\nНичья", reply_markup=main_menu_markup)
+
+                db.update(table='user', set='is_game = ?', where='user_id = ?', values=(False, message.from_user.id,))
 
         # if player gives up
         if (message.text == "Сдаюсь 😵"):
