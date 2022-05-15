@@ -1,8 +1,8 @@
 import json
 import random
+import asyncio
 
 from aiogram import types
-from trafaret import Key
 from dispatcher import dp
 from dispatcher import bot
 from bot import db
@@ -50,6 +50,7 @@ async def process_start_game(message: types.Message):
 @dp.message_handler(content_types=["text"])
 async def process_handler(message: types.Message):
     '''button handlers'''
+
     if message.chat.type == "private":
         if message.text == "Начать новую игру 🎮":
             global user
@@ -62,10 +63,7 @@ async def process_handler(message: types.Message):
             db.update(table='user', set='deck = ?', where='user_id = ?', values=(str(deck), message.from_user.id,))
             user = db.load_user(message.from_user.id)
 
-            # list_accumulator = []
-            # for item in user:
-            #     list_accumulator.append({k: item[k] for k in item.keys()})
-            # print(list_accumulator)
+            
 
             # update player score is he lost everything
             if user[0][2] < 1:
@@ -100,7 +98,7 @@ async def process_handler(message: types.Message):
                 return;
 
             '''Start game'''
-            global dealer_score, player_score, player_cards, dealer_cards, pet, heading_msg
+            global dealer_score, player_score, player_cards, dealer_cards, pet
             # reset all our local variables
             deck         = []
             dealer_cards = []
@@ -123,7 +121,6 @@ async def process_handler(message: types.Message):
                 return
 
             await message.answer(f"Ставка в {message.text} принята.🤑 Приятной игры!")
-            heading_msg = f"<b>Ставка</b>: {pet}| <b>Баланс: </b>{user[0][2]}\n"
             
             # Initial dealing. Two cards for both
             for i in range(2):
@@ -150,21 +147,20 @@ async def process_handler(message: types.Message):
                 dealer_score -= 10
 
             db.update(table='user', set='player_score = ?, deck = ?, player_cards = ?, dealer_cards = ?, dealer_score = ?', where='user_id = ?', values=(player_score, str(deck), str(player_cards), str(dealer_cards), dealer_score, message.from_user.id,))
-            user = db.load_user(message.from_user.id)
 
-            player_score = user[0][5]
-
-            # print
             img = Game_controls()
             img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
-            await message.answer(heading_msg, reply_markup=game_controls_markup)
-            await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
-            await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_cards[0]['cost']}")
-            
-            #print
             img.render_cards([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
+            
+            # print            
+            await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
+            await bot.send_message(message.chat.id, f"⬆️ 👽 <b>Карты дилера: </b> Скрыто")
+
+            # print
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
-            await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}")
+            user = db.load_user(message.from_user.id)
+            player_score = user[0][5]
+            await bot.send_message(message.chat.id, f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}", reply_markup=game_controls_markup)
 
             # Player gets a blackjack  
             if (player_score == 21):
@@ -176,15 +172,12 @@ async def process_handler(message: types.Message):
 
         # if player decides to go on
         if (message.text == "Еще 🟢"):
-
             user         = db.load_user(message.from_user.id)
             pet          = user[0][4]
             player_score = user[0][5]
             dealer_cards = list(eval(user[0][8]))
             player_cards = list(eval(user[0][7]))
             deck         = list(eval(user[0][9]))
-
-            heading_msg = f"<b>Ставка</b>: {pet}| <b>Баланс: </b>{user[0][2]}\n"
 
             if (user[0][3] == False):
                 await message.answer("Для начала начните новую игру")
@@ -197,9 +190,7 @@ async def process_handler(message: types.Message):
             player_score += player_card.get('cost')
 
             db.update(table='user', set='player_score = ?, deck = ?, player_cards = ?', where='user_id = ?', values=(str(player_score), str(deck), str(player_cards), message.from_user.id, ))
-            user = db.load_user(message.from_user.id)
-            
-            player_score = user[0][5]
+           
 
             # generate image
             img_path = []
@@ -213,20 +204,22 @@ async def process_handler(message: types.Message):
 
             # keyboard
             kbd = Keyboard()
-            continue_game_controls_markup = kbd.game_nav_2()            
-            await message.answer(heading_msg, reply_markup=continue_game_controls_markup)
+            continue_game_controls_markup = kbd.game_nav_2()   
 
             # if player wons
             if (player_score == 21):
                 current_win = float(pet)*float(1.5)
                 total_win = float(pet)+user[0][2] # update win
-                
-                await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
-                await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
-                
-                await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
-                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
+                await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                dealer_score = user[0][6]
+                await message.answer(f"⬆️ 👨‍💼 <b>Карты дилера: </b> {dealer_score}")
+
+                await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                player_score = user[0][5]
+                await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=main_menu_markup)
                 db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
 
                 return;
@@ -238,27 +231,32 @@ async def process_handler(message: types.Message):
                     if (i.get('value') == "Туз" and i.get('cost') == 11):
                         player_score-=10
                         i['cost'] = 1
-
                         db.update(table='user', set='player_score = ?, player_cards = ?', where='user_id = ?', values=(player_score, str(player_cards), message.from_user.id, ))
 
                 # if player loses
                 if (player_score > 21):
                     total_win = user[0][2]-float(pet) # update loss
-                    
-                    await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
-                    await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
-                    
-                    await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
-                    await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nПеребор! Вы проиграли ❌\nПроигрыш: -{float(pet)}", reply_markup=main_menu_markup)
 
+                    await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                    user = db.load_user(message.from_user.id)
+                    dealer_score = user[0][6]
+                    await message.answer(f"⬆️ 👨‍💼 <b>Карты дилера: </b> {dealer_score}")
+
+                    await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
+                    user = db.load_user(message.from_user.id)
+                    player_score = user[0][5]
+                    await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nПеребор! Вы проиграли ❌\nПроигрыш: -{float(pet)}", reply_markup=main_menu_markup)
                     db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
                     return;
-            
+
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
-            await message.answer(f"⬆️ 👨‍💼 <b>Карты дилера: </b> {dealer_cards[0]['cost']}")
+            user = db.load_user(message.from_user.id)
+            await message.answer(f"⬆️ 👨‍💼 <b>Карты дилера: </b> Скрыто")
 
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
-            await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}")
+            user = db.load_user(message.from_user.id)
+            player_score = user[0][5]
+            await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}", reply_markup=continue_game_controls_markup)
 
         # if player decides to stand
         if (message.text == "Стоп 🛑"):
@@ -321,13 +319,17 @@ async def process_handler(message: types.Message):
                         total_win = float(pet)+user[0][2] # update player win
 
                         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                        
+                        user = db.load_user(message.from_user.id)
+                        dealer_score = user[0][6]
                         await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                         
                         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
+                        user = db.load_user(message.from_user.id)
+                        player_score = user[0][5]
                         await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
                         db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
-
                         return
                     break
                 
@@ -348,9 +350,13 @@ async def process_handler(message: types.Message):
                 total_win = float(pet)+user[0][2] # update player win
                 
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                dealer_score = user[0][6]
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                player_score = user[0][5]
                 await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы победили! 🥃\n<b>Чистый выигрыш</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
                 db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
@@ -360,9 +366,13 @@ async def process_handler(message: types.Message):
                 total_win = user[0][2]-float(pet) # update loss
 
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                dealer_score = user[0][6]
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                player_score = user[0][5]
                 await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы проиграли ❌\nПроигрыш: -{float(pet)}", reply_markup=main_menu_markup)
 
                 db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
@@ -370,14 +380,18 @@ async def process_handler(message: types.Message):
             # if draw
             if (dealer_score == player_score):
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+                
+                user = db.load_user(message.from_user.id)
+                dealer_score = user[0][6]
                 await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
                 
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
+                user = db.load_user(message.from_user.id)
+                player_score = user[0][5]
                 await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nНичья", reply_markup=main_menu_markup)
 
         # if player gives up
         if (message.text == "Сдаюсь 😵"):
-
             user         = db.load_user(message.from_user.id)
             pet          = user[0][4]
             player_score = user[0][5]
@@ -396,15 +410,16 @@ async def process_handler(message: types.Message):
             img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
             
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
+            user = db.load_user(message.from_user.id)
+            dealer_score = user[0][6]
             await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
             
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
+            user = db.load_user(message.from_user.id)
+            player_score = user[0][5]
             await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}\nВы сдались :(\nПроигрыш: -{float(pet)}", reply_markup=main_menu_markup)
 
             db.update(table='user', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
-
-
-
 
 '''
 выборку из бд сделать в виде словаря тем самым избавиться от кучи переменных.
