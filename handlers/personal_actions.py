@@ -2,18 +2,18 @@ import json
 import random
 
 from aiogram import types
+from trafaret import Key
 from dispatcher import dp
 from dispatcher import bot
 from bot import db
 
-from functions import render_image
+from game_controls import Game_controls, Keyboard
 
 dealer_score = 0
 
 # keyboard
-main_menu_new_game_btn = types.KeyboardButton("Начать новую игру 🎮")
-main_menu_balance_btn = types.KeyboardButton("Просмотреть баланс 💰")
-main_menu_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(main_menu_new_game_btn, main_menu_balance_btn)
+kbd = Keyboard()
+main_menu_markup = kbd.new_game()
 
 # get help command
 @dp.message_handler(commands=['help'])
@@ -44,7 +44,6 @@ async def process_start_game(message: types.Message):
     if (not db.load_user(message.from_user.id)):
         db.add_user(int(message.from_user.id))
     db.update('user','is_game = ?','user_id = ?',(False,message.from_user.id,))
-    
     await message.answer("♦️ Добро пожаловать в блэк-джек ♦️", reply_markup=main_menu_markup)
 
 # main game logic
@@ -78,9 +77,8 @@ async def process_handler(message: types.Message):
             else: db.update(table='user', set='is_game = ?', where='user_id = ?', values=(True, message.from_user.id,))
 
             # keyboard
-            game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🧠")
-            game_type_markup_online = types.KeyboardButton("Играть с другом 👨‍🦰 (в разработке </>)")
-            game_type_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
+            kbd = Keyboard()
+            game_type_markup = kbd.game_type()
             await message.answer("Выберите тип игры", reply_markup=game_type_markup)
 
         if message.text == "Играть с компьютером 🧠":
@@ -90,24 +88,9 @@ async def process_handler(message: types.Message):
                 return;
 
             # keyboard
-            balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user[0][2]))
-            pet_1_btn   = types.KeyboardButton("1 🪙")
-            pet_10_btn  = types.KeyboardButton("10 🪙")
-            pet_25_btn  = types.KeyboardButton("25 🪙")
-            pet_50_btn  = types.KeyboardButton("50 🪙")
-            pet_100_btn = types.KeyboardButton("100 🪙")
-            pet_all_in_btn = types.KeyboardButton(str(user[0][2]) + " 🪙")
-
-            sample_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-                pet_1_btn,
-                pet_10_btn,
-                pet_25_btn,
-                pet_50_btn,
-                pet_100_btn,
-                pet_all_in_btn,
-                balance_btn
-            )
-            await message.answer("Сделайте ставку", reply_markup=sample_markup)
+            kbd = Keyboard()
+            choose_pet_markup = kbd.pet(user)
+            await message.answer("Сделайте ставку", reply_markup=choose_pet_markup)
 
         if ("🪙" in message.text):
             user = db.load_user(message.from_user.id)
@@ -124,16 +107,11 @@ async def process_handler(message: types.Message):
             player_cards = []
             player_score = 0
             dealer_score = 0
+            deck         = list(eval(user[0][9]))
 
             # keyboard
-            more_btn = types.KeyboardButton("Еще 🟢")
-            stop_btn = types.KeyboardButton("Стоп 🛑")
-            give_up_btn = types.KeyboardButton("Сдаюсь 😵")
-            game_controls_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-                more_btn, stop_btn, give_up_btn
-            )
-
-            deck = list(eval(user[0][9]))
+            kbd = Keyboard()
+            game_controls_markup = kbd.game_nav_1()
 
             pet = message.text.split()[0]
             db.update(table='user', set='pet = ?',where='user_id = ?', values=(pet, message.from_user.id,))
@@ -177,13 +155,14 @@ async def process_handler(message: types.Message):
             player_score = user[0][5]
 
             # print
-            render_image([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
+            img = Game_controls()
+            img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
             await message.answer(heading_msg, reply_markup=game_controls_markup)
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
             await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_cards[0]['cost']}")
             
             #print
-            render_image([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
+            img.render_cards([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
             await message.answer(f"⬆️ 👨‍💼 <b>Ваши карты: </b> {player_score}")
 
@@ -227,15 +206,14 @@ async def process_handler(message: types.Message):
             for i in range(len(player_cards)):
                 img_path.append(player_cards[i]['image'])
             
-            render_image(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
-            render_image([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
-            render_image([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
+            img = Game_controls()
+            img.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
+            img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
+            img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
 
             # keyboard
-            more_btn = types.KeyboardButton("Еще 🟢")
-            stop_btn = types.KeyboardButton("Стоп 🛑")
-            continue_game_controls_markup = types.ReplyKeyboardMarkup(resize_keyboard=True).add(more_btn, stop_btn)
-            
+            kbd = Keyboard()
+            continue_game_controls_markup = kbd.game_nav_2()            
             await message.answer(heading_msg, reply_markup=continue_game_controls_markup)
 
             # if player wons
@@ -284,7 +262,6 @@ async def process_handler(message: types.Message):
 
         # if player decides to stand
         if (message.text == "Стоп 🛑"):
-
             user         = db.load_user(message.from_user.id)
             pet          = user[0][4]
             player_score = user[0][5]
@@ -302,7 +279,9 @@ async def process_handler(message: types.Message):
             # generate image for player
             for i in range(len(player_cards)):
                 img_path.append(player_cards[i]['image'])
-            render_image(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
+            
+            img = Game_controls()
+            img.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
             
             # managing dealer moves
             while (dealer_score < 17):
@@ -322,7 +301,9 @@ async def process_handler(message: types.Message):
                 
                 for i in range(len(dealer_cards)):
                     img_path_dealer.append(dealer_cards[i]['image'])
-                render_image(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
+
+                img = Game_controls()
+                img.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
 
                 # if dealer picks too many cards
                 if (dealer_score > 21):
@@ -357,7 +338,9 @@ async def process_handler(message: types.Message):
 
             for i in range(len(dealer_cards)):
                 img_path_dealer.append(dealer_cards[i]['image'])
-            render_image(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
+
+            img = Game_controls()
+            img.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
             
             # if dealer loses, player win
             if (dealer_score < player_score):
@@ -408,8 +391,9 @@ async def process_handler(message: types.Message):
                 return;
 
             total_win = user[0][2]-float(pet) # update loss
-
-            render_image([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
+            
+            img = Game_controls()
+            img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
             
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
             await message.answer(f"⬆️ 👽 <b>Карты дилера: </b> {dealer_score}")
