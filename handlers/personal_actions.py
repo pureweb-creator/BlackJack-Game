@@ -15,12 +15,17 @@ global _
 # get help command
 @dp.message_handler(commands=['help'])
 async def info_help(message: types.Message):
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
     await message.answer(_("Связаться с разработчиком: @bug_lag_feature"))
 
 # get balance command
 @dp.message_handler(commands=['balance'])
 async def get_balance(message: types.Message):
     user = db.load_user(message.from_user.id)
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
+
     await message.answer(_("💰 Баланс: ")+ str(user['balance']))
 
 # change lang command
@@ -41,6 +46,9 @@ async def change_lang(message: types.Message):
 # get rules command
 @dp.message_handler(commands=['rules'])
 async def rules(message: types.Message):
+    user = db.load_user(message.from_user.id)
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
     await message.answer(_("""♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n
 Мы предоставим краткий свод правил для тех, кто никогда не играл в блэкджек.\n
 Магическое число для блэкджека — 21.\nЗначения всех карт, розданных игроку, складываются, и если сумма превышает 21, игрок вылетает и мгновенно проигрывает.\n
