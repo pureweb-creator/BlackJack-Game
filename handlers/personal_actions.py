@@ -201,7 +201,7 @@ async def process_handler(message: types.Message):
             main_menu_markup = kbd.new_game()
             
             current_win = float(pet)*float(1.5)
-            total_win = float(pet)*float(1.5)+user['balance']
+            total_win = current_win+float(user['balance'])
             db.update(table='user', set='player_score = ?, is_game = ?, balance = ?', where='user_id = ?', values=(user['player_score'], False, total_win, message.from_user.id, ))
             
             await message.answer(_("У вас Блэк-Джек! Вы победили!")+" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
@@ -242,7 +242,7 @@ async def process_handler(message: types.Message):
         # if player wons
         if (user['player_score'] == 21):
             current_win = float(user['pet'])*float(1.5)
-            total_win = float(user['pet'])+user['balance'] # update win
+            total_win = current_win+user['balance'] # update win
 
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
             user = db.load_user(message.from_user.id)
@@ -348,8 +348,8 @@ async def process_handler(message: types.Message):
                 
                 # if dealer loses, player win
                 if (user['dealer_score'] > 21):
-                    current_win = float(user['pet'])*float(1.5)
-                    total_win = float(user['pet'])+user['balance'] # update player win
+                    current_win = float(user['pet'])
+                    total_win = current_win+user['balance'] # update player win
 
                     await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
                     
@@ -379,8 +379,8 @@ async def process_handler(message: types.Message):
         
         # if dealer loses, player win
         if (user['dealer_score'] < user['player_score']):
-            current_win = float(user['pet'])*float(1.5)
-            total_win = float(user['pet'])+user['balance'] # update player win
+            current_win = float(user['pet'])
+            total_win = current_win+user['balance'] # update player win
             
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
             user = db.load_user(message.from_user.id)
@@ -389,7 +389,7 @@ async def process_handler(message: types.Message):
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
             user = db.load_user(message.from_user.id)
 
-                # keyboard
+            # keyboard
             kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
 
