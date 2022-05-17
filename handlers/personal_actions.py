@@ -32,7 +32,6 @@ async def get_balance(message: types.Message):
 # change lang command
 @dp.message_handler(commands=['lang'])
 async def change_lang(message: types.Message):
-
     user = db.load_user(message.from_user.id)
 
     locale = Game_controls()
@@ -458,7 +457,7 @@ async def process_handler(message: types.Message):
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
         user = db.load_user(message.from_user.id)
 
-            # keyboard
+        # keyboard
         kbd = Keyboard(user['lang'])
         main_menu_markup = kbd.new_game()
 
@@ -468,5 +467,5 @@ async def process_handler(message: types.Message):
 
     # view balance
     if (message.text == _("Просмотреть баланс 💰")):
-            user = db.load_user(message.from_user.id)
-            await message.answer(_("💰 Баланс: ")+ str(user['balance']))
+        user = db.load_user(message.from_user.id)
+        await message.answer(_("💰 Баланс: ")+ str(user['balance']))
