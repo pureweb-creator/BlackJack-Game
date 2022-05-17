@@ -1,0 +1,195 @@
+# English translations for PROJECT.
+# Copyright (C) 2022 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2022-05-17 00:33+0300\n"
+"PO-Revision-Date: 2022-05-16 23:30+0300\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.9.1\n"
+
+#: game_controls.py:39
+msgid "Начать новую игру 🎮"
+msgstr "Start new game 🎮"
+
+#: game_controls.py:40
+msgid "Просмотреть баланс 💰"
+msgstr "My balance 💰"
+
+#: game_controls.py:44
+msgid "Играть с компьютером 🧠"
+msgstr "With bot 🧠"
+
+#: game_controls.py:45
+msgid "Играть с другом 👨‍🦰 (в разработке </>)"
+msgstr "With a friend 👨‍🦰 (developing </>)"
+
+#: game_controls.py:49 handlers/personal_actions.py:419
+msgid "💰 Баланс: "
+msgstr "💰 Balance: "
+
+#: game_controls.py:55
+msgid "Ва-банк! 🤑"
+msgstr "All-in! 🤑"
+
+#: game_controls.py:68 game_controls.py:77
+msgid "Еще 🟢"
+msgstr "Hit 🟢"
+
+#: game_controls.py:69 game_controls.py:78
+msgid "Стоп 🛑"
+msgstr "Stand 🛑"
+
+#: game_controls.py:70
+msgid "Сдаюсь 😵"
+msgstr "Give up 😵"
+
+#: handlers/personal_actions.py:25
+msgid "Связаться с разработчиком: @bug_lag_feature"
+msgstr "Developer contacts: @bug_lag_feature"
+
+#: handlers/personal_actions.py:38
+msgid "Выберите язык"
+msgstr "Choose language"
+
+#: handlers/personal_actions.py:43
+msgid ""
+"♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n"
+"\n"
+"Мы предоставим краткий свод правил для тех, кто никогда не играл в "
+"блэкджек.\n"
+"\n"
+"Магическое число для блэкджека — 21.\n"
+"Значения всех карт, розданных игроку, складываются, и если сумма "
+"превышает 21, игрок вылетает и мгновенно проигрывает.\n"
+"\n"
+"Если игрок получает ровно 21, игрок выигрывает у дилера.\n"
+"В противном случае для выигрыша сумма карт игрока должна быть больше "
+"суммы карт дилера.\n"
+"\n"
+"Стоимости карт:\n"
+"- Валет - 2 очка;\n"
+"- Дама - 3 очка;\n"
+"- Король - 4 очка;\n"
+"- Туз - 11 очков (если сумма карт больше 21, может стоить 1 очко);\n"
+"Стоимость остальных карт определяется их номиналом."
+msgstr ""
+"♦️ <b>Rules of Black-Jack</b> ♦️\n"
+"\n"
+"We will provide a brief set of rules for readers who have never played "
+"Blackjack.\n"
+"\n"
+"The magic number for Blackjack is 21.\n"
+"The values of all the cards dealt to player are added and if the sum "
+"exceeds 21, the player busts and loses instantly.\n"
+"\n"
+"If a player gets an exact 21, the player wins against the dealer.\n"
+"Otherwise, in order to win, the sum of the player's cards must be more "
+"than the sum of the dealer's cards.\n"
+"\n"
+"Cards values:\n"
+"- Jack - 2 scores;\n"
+"- Queen - 3 scores;\n"
+"- King - 4 scores;\n"
+"- Ace - 11 scores (If the sum of the cards exceeds 21, can costs 1 "
+"score);\n"
+"The value of the rest of the cards is defined by their number."
+
+#: handlers/personal_actions.py:60 handlers/personal_actions.py:75
+msgid "Для начала закончите старую игру"
+msgstr "Finish the old game"
+
+#: handlers/personal_actions.py:64
+msgid "♦️ Добро пожаловать в блэк-джек ♦️"
+msgstr "♦️ Welcome to Blackjack ♦️"
+
+#: handlers/personal_actions.py:96
+msgid "Выберите тип игры"
+msgstr "Choose game type"
+
+#: handlers/personal_actions.py:101 handlers/personal_actions.py:113
+#: handlers/personal_actions.py:199 handlers/personal_actions.py:281
+#: handlers/personal_actions.py:398
+msgid "Для начала начните новую игру"
+msgstr "You should start a new game"
+
+#: handlers/personal_actions.py:107
+msgid "Сделайте ставку"
+msgstr "Choose bet"
+
+#: handlers/personal_actions.py:139
+msgid "На вашем балансе недостаточно средств."
+msgstr "There are not enough funds on your balance."
+
+#: handlers/personal_actions.py:142
+msgid "Ставка в {} принята.🤑 Приятной игры!"
+msgstr "{} bet accepted.🤑 Good luck!"
+
+#: handlers/personal_actions.py:176 handlers/personal_actions.py:231
+#: handlers/personal_actions.py:255 handlers/personal_actions.py:265
+#: handlers/personal_actions.py:329 handlers/personal_actions.py:355
+#: handlers/personal_actions.py:369 handlers/personal_actions.py:382
+#: handlers/personal_actions.py:408
+msgid "Карты дилера"
+msgstr "Dealer's cards"
+
+#: handlers/personal_actions.py:176 handlers/personal_actions.py:265
+msgid "Скрыто"
+msgstr "Hidden"
+
+#: handlers/personal_actions.py:181 handlers/personal_actions.py:235
+#: handlers/personal_actions.py:259 handlers/personal_actions.py:269
+#: handlers/personal_actions.py:333 handlers/personal_actions.py:359
+#: handlers/personal_actions.py:373 handlers/personal_actions.py:386
+#: handlers/personal_actions.py:412
+msgid "Ваши карты"
+msgstr "Your cards"
+
+#: handlers/personal_actions.py:189
+msgid "У вас Блэк-Джек! Вы победили!"
+msgstr "You've a blackjack! You win!"
+
+#: handlers/personal_actions.py:189 handlers/personal_actions.py:235
+#: handlers/personal_actions.py:333 handlers/personal_actions.py:359
+msgid "Чистый выигрыш"
+msgstr "Your winnings"
+
+#: handlers/personal_actions.py:235 handlers/personal_actions.py:333
+msgid "Вы победили!"
+msgstr "You win!"
+
+#: handlers/personal_actions.py:259
+msgid "Перебор! Вы проиграли"
+msgstr "Bust! You lost!"
+
+#: handlers/personal_actions.py:259 handlers/personal_actions.py:373
+#: handlers/personal_actions.py:412
+msgid "Проигрыш"
+msgstr "Loss"
+
+#: handlers/personal_actions.py:359
+msgid "Вы победили"
+msgstr "You win"
+
+#: handlers/personal_actions.py:373
+msgid "Вы проиграли"
+msgstr "You lose"
+
+#: handlers/personal_actions.py:386
+msgid "Ничья"
+msgstr "Draw"
+
+#: handlers/personal_actions.py:412
+msgid "Вы сдались"
+msgstr "You gave up"
+

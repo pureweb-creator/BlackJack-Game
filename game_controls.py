@@ -1,3 +1,4 @@
+import gettext
 from PIL import Image
 from aiogram import types
 
@@ -28,25 +29,49 @@ class Game_controls:
 
         background.save(f'static/images/{img_name}', format='webp')
 
+    def get_locale(self, lang):
+        if (lang == 'en'):
+            en = gettext.translation('blackjack', localedir='locales', languages=['en'])
+            en.install()
+            return en.gettext
+
+        if (lang == 'ru'):
+            gettext.bindtextdomain('blackjack', 'localization/')
+            gettext.textdomain('blackjack')
+            return gettext.gettext
+
 class Keyboard:
+    def __init__(self, lang):
+        self.lang = lang
+
+        if (self.lang == 'en'):
+            en = gettext.translation('blackjack', localedir='locales', languages=['en'])
+            en.install()
+            self._ = en.gettext
+
+        if (self.lang == 'ru'):
+            gettext.bindtextdomain('blackjack', 'localization/')
+            gettext.textdomain('blackjack')
+            self._ = gettext.gettext
+
     def new_game(self):
-        main_menu_new_game_btn = types.KeyboardButton("Начать новую игру 🎮")
-        main_menu_balance_btn = types.KeyboardButton("Просмотреть баланс 💰")
+        main_menu_new_game_btn = types.KeyboardButton(text=self._("Начать новую игру 🎮"))
+        main_menu_balance_btn = types.KeyboardButton(text=self._("Просмотреть баланс 💰"))
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(main_menu_new_game_btn, main_menu_balance_btn)
 
     def game_type(self):
-        game_type_markup_computer = types.KeyboardButton("Играть с компьютером 🧠")
-        game_type_markup_online = types.KeyboardButton("Играть с другом 👨‍🦰 (в разработке </>)")
+        game_type_markup_computer = types.KeyboardButton(text=self._("Играть с компьютером 🧠"))
+        game_type_markup_online = types.KeyboardButton(text=self._("Играть с другом 👨‍🦰 (в разработке </>)"))
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
 
     def pet(self, user):
-        balance_btn = types.KeyboardButton("💰 Баланс: "+ str(user['balance']))
+        balance_btn = types.KeyboardButton(text=self._("💰 Баланс: ")+ str(user['balance']))
         pet_1_btn   = types.KeyboardButton("1 🪙")
         pet_10_btn  = types.KeyboardButton("10 🪙")
         pet_25_btn  = types.KeyboardButton("25 🪙")
         pet_50_btn  = types.KeyboardButton("50 🪙")
         pet_100_btn = types.KeyboardButton("100 🪙")
-        pet_all_in_btn = types.KeyboardButton(f"Ва-банк! 🤑 ({user['balance']})")
+        pet_all_in_btn = types.KeyboardButton(text=self._("Ва-банк! 🤑")+f" ({user['balance']})")
 
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
             pet_1_btn,
@@ -59,17 +84,15 @@ class Keyboard:
         )
 
     def game_nav_1(self):
-        more_btn = types.KeyboardButton("Еще 🟢")
-        stop_btn = types.KeyboardButton("Стоп 🛑")
-        give_up_btn = types.KeyboardButton("Сдаюсь 😵")
+        more_btn = types.KeyboardButton(text=self._("Еще 🟢"))
+        stop_btn = types.KeyboardButton(text=self._("Стоп 🛑"))
+        give_up_btn = types.KeyboardButton(text=self._("Сдаюсь 😵"))
 
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
             more_btn, stop_btn, give_up_btn
         )
 
     def game_nav_2(self):
-        more_btn = types.KeyboardButton("Еще 🟢")
-        stop_btn = types.KeyboardButton("Стоп 🛑")
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(more_btn, stop_btn)
-
-    
+        more_btn = types.KeyboardButton(text=self._("Еще 🟢"))
+        stop_btn = types.KeyboardButton(text=self._("Стоп 🛑"))
+        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(more_btn, stop_btn)   
