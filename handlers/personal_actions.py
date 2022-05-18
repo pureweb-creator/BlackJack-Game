@@ -12,6 +12,21 @@ from game_controls import Game_controls, Keyboard
 dealer_score = 0
 global _
 
+# settings command
+@dp.message_handler(commands=['settings'])
+async def settigns(message: types.Message):
+    # get current user locale
+    user = db.load_user(message.from_user.id)
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
+
+    # keyboard
+    btn1 = types.InlineKeyboardButton(_('Сменить язык 👅'), callback_data="change_lang")
+    btn2 = types.InlineKeyboardButton(_('Тех поддержка 👨‍💻'), callback_data="contact_support")
+    settings_markup = types.InlineKeyboardMarkup().add(btn1, btn2)
+
+    await message.answer("<b>"+_("Настройки 🛠")+"</b>", reply_markup=settings_markup)
+
 # get help command
 @dp.message_handler(commands=['help'])
 async def info_help(message: types.Message):
@@ -34,9 +49,11 @@ async def get_balance(message: types.Message):
 async def change_lang(message: types.Message):
     user = db.load_user(message.from_user.id)
 
+    # get current user locale
     locale = Game_controls()
     _ = locale.get_locale(user['lang'])
     
+    # keyboard
     russian_lang_btn = types.InlineKeyboardButton('Русский 🇷🇺', callback_data='lang_russian')
     eng_lang_btn = types.InlineKeyboardButton('English 🇺🇸', callback_data='lang_english')
     change_lang_markup = types.InlineKeyboardMarkup().add(russian_lang_btn, eng_lang_btn)
