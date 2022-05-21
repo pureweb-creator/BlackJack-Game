@@ -9,5 +9,5 @@ Just a simple card game telegram bot.
 
 **Todo:**
 - [x] English localization
-- [ ] Some statistics for player
+- [x] Some statistics for player
 - [ ] p2p game
