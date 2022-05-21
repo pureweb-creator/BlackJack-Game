@@ -1,15 +1,15 @@
-# English translations for PROJECT.
-# Copyright (C) 2022 ORGANIZATION
-# This file is distributed under the same license as the PROJECT project.
-# FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
+# English translations Blackjack.
+# Copyright (C) 2022 BugLagFeature
+# This file is distributed under the same license as the Blackjack project.
+# FIRST AUTHOR <roman.semenikhin99@gmail.com>, 2022.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: PROJECT VERSION\n"
-"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"Project-Id-Version: 1.0.2\n"
+"Report-Msgid-Bugs-To: roman.semenikhin99@gmail.com\n"
 "POT-Creation-Date: 2022-05-21 17:18+0300\n"
 "PO-Revision-Date: 2022-05-16 23:30+0300\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Last-Translator: Roman Semenikhin <roman.semenikhin99@gmail.com>\n"
 "Language: en\n"
 "Language-Team: en <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
