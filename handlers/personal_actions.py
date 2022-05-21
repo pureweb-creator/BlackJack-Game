@@ -51,7 +51,6 @@ async def statistics(message: types.Message):
 
     await message.answer(msg)
     
-
 # get help command
 @dp.message_handler(commands=['help'])
 async def info_help(message: types.Message):
@@ -104,12 +103,13 @@ async def process_start_game(message: types.Message):
     '''bot start'''
     # register user if not exists
     user = db.load_user(message.from_user.id)
-    
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
 
     if (not user):
         db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
+
+    user = db.load_user(message.from_user.id)
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
 
     # keyboard
     kbd = Keyboard(user['lang'])
