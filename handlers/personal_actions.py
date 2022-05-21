@@ -34,9 +34,9 @@ async def statistics(message: types.Message):
     
     stat = db.load_statistics(message.from_user.id)
     percentage = [
-        stat['games_won']/stat['games_played']*100,
-        stat['games_lost']/stat['games_played']*100,
-        stat['games_tied']/stat['games_played']*100,
+        round(stat['games_won']/stat['games_played']*100, 2),
+        round(stat['games_lost']/stat['games_played']*100, 2),
+        round(stat['games_tied']/stat['games_played']*100, 2),
     ]
 
     locale = Game_controls()
