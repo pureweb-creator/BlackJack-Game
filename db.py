@@ -6,7 +6,7 @@ class DBh:
         self.connection = sqlite3.connect(database)
         self.connection.row_factory = sqlite3.Row
         self.cursor = self.connection.cursor()
-
+        
     def load_user(self, user_id):
         '''load user if exists'''
         with self.connection:
@@ -14,6 +14,15 @@ class DBh:
             if user:
                 user = [{k: item[k] for k in item.keys()} for item in user]
                 return user[0]
+            return False
+
+    def load_statistics(self, user_id):
+        '''load statistics if user exists'''
+        with self.connection:
+            stat = self.cursor.execute('SELECT user_name, games_played, games_won, games_lost, games_tied, lang FROM `user` WHERE `user_id` = ?', (user_id,)).fetchall()
+            if (stat):
+                stat = [{k: item[k] for k in item.keys()} for item in stat]
+                return stat[0]
             return False
 
     def add_user(self, user_id, user_name, user_lastname):
