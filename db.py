@@ -4,7 +4,7 @@ class DBh:
     def __init__(self, database, user, password, host, port):
         """Connecting to DB and saving connection cursor"""
         
-        self.connection = psycopg2.connect(database, user, password, host, port)
+        self.connection = psycopg2.connect(database="d4o7b3k59sdq3o", user='cxtmuxkssvugho', password='b587b95c8677bba2eb9bfb8681d5d0d91651fd8037ed2632bb846e462dd24662', host='ec2-63-35-156-160.eu-west-1.compute.amazonaws.com', port= '5432')
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
         
