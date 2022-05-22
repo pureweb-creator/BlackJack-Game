@@ -1,14 +1,12 @@
 import psycopg2
 
 class DBh:
-    def __init__(self, database, user, password, host, port):
+    def __init__(self, database, user, password):
         """Connecting to DB and saving connection cursor"""
 
         self.database = database
         self.user = user
         self.password = password
-        self.host = host
-        self.port = port
         
         self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host='ec2-63-35-156-160.eu-west-1.compute.amazonaws.com', port="5432")
         self.connection.autocommit = True

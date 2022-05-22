@@ -2,11 +2,12 @@ import gettext
 from db import DBh
 from PIL import Image
 from aiogram import types
+from dispatcher import config
 
 class Game_controls(DBh):
     '''Useful functions'''
     def __init__(self):
-        super().__init__("db.db")
+        super().__init__(database=config.DATABASE, user=config.USER, password=config.PASSWORD)
         
     def render_cards(self, img_path, img_count, img_name):
         '''Rendering an image with gaming table and cards'''
