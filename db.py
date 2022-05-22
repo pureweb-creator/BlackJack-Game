@@ -17,8 +17,11 @@ class DBh:
     def load_user(self, user_id):
         """load user if exists"""
         with self.connection:
-            user = self.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,)).fetchall()
+            user = self.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+            if user is None:
+                return False
             if user:
+                user = user.fetchall()
                 user = [{k: item[k] for k in item.keys()} for item in user]
                 return user[0]
             return False
