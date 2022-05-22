@@ -1,7 +1,7 @@
 from aiogram import executor
 from dispatcher import dp
+from dispatcher import config
 import handlers
-import dispatcher
 
 from db import DBh
 db = DBh(config.DATABASE, config.USER, config.PASSWORD, config.HOST, config.PORT)
