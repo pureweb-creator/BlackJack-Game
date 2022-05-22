@@ -103,24 +103,24 @@ class Keyboard:
         game_type_markup_online = types.KeyboardButton(text=self._("Играть с другом 👨‍🦰 (в разработке </>)"))
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
 
-    def pet(self, user):
+    def bet(self, user):
         '''keyboard buttons for "choose bet" command'''
         
         balance_btn = types.KeyboardButton(text=self._("💰 Баланс: ")+ str(user['balance']))
-        pet_1_btn   = types.KeyboardButton("1 🪙")
-        pet_10_btn  = types.KeyboardButton("10 🪙")
-        pet_25_btn  = types.KeyboardButton("25 🪙")
-        pet_50_btn  = types.KeyboardButton("50 🪙")
-        pet_100_btn = types.KeyboardButton("100 🪙")
-        pet_all_in_btn = types.KeyboardButton(text=self._("Ва-банк! 🤑")+f" ({user['balance']})")
+        bet_1_btn   = types.KeyboardButton("1 🪙")
+        bet_10_btn  = types.KeyboardButton("10 🪙")
+        bet_25_btn  = types.KeyboardButton("25 🪙")
+        bet_50_btn  = types.KeyboardButton("50 🪙")
+        bet_100_btn = types.KeyboardButton("100 🪙")
+        bet_all_in_btn = types.KeyboardButton(text=self._("Ва-банк! 🤑")+f" ({user['balance']})")
 
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            pet_1_btn,
-            pet_10_btn,
-            pet_25_btn,
-            pet_50_btn,
-            pet_100_btn,
-            pet_all_in_btn,
+            bet_1_btn,
+            bet_10_btn,
+            bet_25_btn,
+            bet_50_btn,
+            bet_100_btn,
+            bet_all_in_btn,
             balance_btn
         )
 
