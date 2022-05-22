@@ -10,7 +10,7 @@ class DBh:
         self.host = host
         self.port = port
         
-        self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host='ec2-63-35-156-160.eu-west-1.compute.amazonaws.com', port=self.port)
+        self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host='ec2-63-35-156-160.eu-west-1.compute.amazonaws.com', port="5432")
         self.connection.autocommit = True
         self.cursor = self.connection.cursor()
         
