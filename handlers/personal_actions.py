@@ -102,9 +102,9 @@ async def rules(message: types.Message):
 async def process_start_game(message: types.Message):
     '''bot start'''
     user = db.load_user(message.from_user.id)
-    if (not user):
+    if (user==False):
         # register user if not exists
-        db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
+        test = db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
 
     user = db.load_user(message.from_user.id)
     locale = Game_controls()
@@ -114,7 +114,7 @@ async def process_start_game(message: types.Message):
     kbd = Keyboard(user['lang'])
     main_menu_markup = kbd.new_game()
 
-    db.update('users','is_game = ?','user_id = ?',(False,message.from_user.id,))
+    db.update('users','is_game = %s','user_id = %s',(False,message.from_user.id,))
     await message.answer(_("♦️ Добро пожаловать в блэк-джек ♦️"), reply_markup=main_menu_markup)
 
 # main game logic
@@ -135,14 +135,14 @@ async def process_handler(message: types.Message):
             deck = json.load(input_f)
         input_f.close()
 
-        db.update(table='users', set='deck = ?', where='user_id = ?', values=(str(deck), message.from_user.id,))
+        db.update(table='users', set='deck = %s', where='user_id = %s', values=(str(deck), message.from_user.id,))
 
         # update player score is he lost everything
         if user['balance'] < 1:
             user['balance'] = 100
-            db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(100, True, message.from_user.id,))
+            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(100, True, message.from_user.id,))
 
-        else: db.update(table='users', set='is_game = ?', where='user_id = ?', values=(True, message.from_user.id,))
+        else: db.update(table='users', set='is_game = %s', where='user_id = %s', values=(True, message.from_user.id,))
 
         # keyboard
         kbd = Keyboard(user['lang'])
@@ -187,7 +187,7 @@ async def process_handler(message: types.Message):
         else:
             bet = message.text.split()[0]
 
-        db.update(table='users', set='bet = ?',where='user_id = ?', values=(bet, message.from_user.id,))
+        db.update(table='users', set='bet = %s',where='user_id = %s', values=(bet, message.from_user.id,))
         user = db.load_user(message.from_user.id)
 
         if (int(bet) > int(user['balance'])):
@@ -220,7 +220,7 @@ async def process_handler(message: types.Message):
             dealer_cards[0]['cost'] = 1
             dealer_score -= 10
 
-        db.update(table='users', set='player_score = ?, deck = ?, player_cards = ?, dealer_cards = ?, dealer_score = ?', where='user_id = ?', values=(player_score, str(deck), str(player_cards), str(dealer_cards), dealer_score, message.from_user.id,))
+        db.update(table='users', set='player_score = %s, deck = %s, player_cards = %s, dealer_cards = %s, dealer_score = %s', where='user_id = %s', values=(player_score, str(deck), str(player_cards), str(dealer_cards), dealer_score, message.from_user.id,))
 
         img = Game_controls()
         img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
@@ -245,7 +245,7 @@ async def process_handler(message: types.Message):
             # updating player score
             current_win = float(bet)*float(1.5)
             total_win = current_win+float(user['balance'])
-            db.update(table='users', set='player_score = ?, is_game = ?, balance = ?', where='user_id = ?', values=(user['player_score'], False, total_win, message.from_user.id, ))
+            db.update(table='users', set='player_score = %s, is_game = %s, balance = %s', where='user_id = %s', values=(user['player_score'], False, total_win, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
             
             # pring player cards and score
@@ -269,7 +269,7 @@ async def process_handler(message: types.Message):
         deck.remove(player_card)
         user['player_score'] += player_card.get('cost')
 
-        db.update(table='users', set='player_score = ?, deck = ?, player_cards = ?', where='user_id = ?', values=(str(user['player_score']), str(deck), str(player_cards), message.from_user.id, ))
+        db.update(table='users', set='player_score = %s, deck = %s, player_cards = %s', where='user_id = %s', values=(str(user['player_score']), str(deck), str(player_cards), message.from_user.id, ))
 
         # generate image
         img_path = []
@@ -310,7 +310,7 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
             
-            db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
             
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
             
@@ -323,7 +323,7 @@ async def process_handler(message: types.Message):
                 if (i.get('value') == "Туз" and i.get('cost') == 11):
                     user['player_score']-=10
                     i['cost'] = 1
-                    db.update(table='users', set='player_score = ?, player_cards = ?', where='user_id = ?', values=(user['player_score'], str(player_cards), message.from_user.id, ))
+                    db.update(table='users', set='player_score = %s, player_cards = %s', where='user_id = %s', values=(user['player_score'], str(player_cards), message.from_user.id, ))
 
             # if player loses
             if (user['player_score'] > 21):
@@ -346,7 +346,7 @@ async def process_handler(message: types.Message):
                 
                 # print player score
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Перебор! Вы проиграли")+" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
-                db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+                db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
                 
                 game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
 
@@ -391,7 +391,7 @@ async def process_handler(message: types.Message):
             deck.remove(dealer_card)
             user['dealer_score'] += dealer_card.get('cost')
 
-            db.update(table='users', set='dealer_score = ?, deck = ?, dealer_cards = ?', where='user_id = ?', values=(str(user['dealer_score']), str(deck), str(dealer_cards), message.from_user.id, ))
+            db.update(table='users', set='dealer_score = %s, deck = %s, dealer_cards = %s', where='user_id = %s', values=(str(user['dealer_score']), str(deck), str(dealer_cards), message.from_user.id, ))
             
             user = db.load_user(message.from_user.id)
             dealer_cards = list(eval(user['dealer_cards']))
@@ -413,7 +413,7 @@ async def process_handler(message: types.Message):
                     if (i.get('value') == "Туз" and i.get('cost') == 11):
                         user['dealer_score']-=10
                         i['cost'] = 1
-                        db.update(table='users', set='dealer_score = ?, dealer_cards = ?', where='user_id = ?', values=(user['dealer_score'], str(dealer_cards), message.from_user.id, ))
+                        db.update(table='users', set='dealer_score = %s, dealer_cards = %s', where='user_id = %s', values=(user['dealer_score'], str(dealer_cards), message.from_user.id, ))
                 
                 # if dealer loses, player win
                 if (user['dealer_score'] > 21):
@@ -435,7 +435,7 @@ async def process_handler(message: types.Message):
                     main_menu_markup = kbd.new_game()
                     await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-                    db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+                    db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
                     
                     game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
 
@@ -473,7 +473,7 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-            db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_won=True)
 
         # dealer wins
@@ -495,7 +495,7 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-            db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
     
         # TIE game
@@ -518,7 +518,7 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Ничья"), reply_markup=main_menu_markup)
 
-            db.update(table='users', set='is_game = ?', where='user_id = ?', values=(False, message.from_user.id,))
+            db.update(table='users', set='is_game = %s', where='user_id = %s', values=(False, message.from_user.id,))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_tied=True)
 
     # if player gives up
@@ -557,7 +557,7 @@ async def process_handler(message: types.Message):
         # print dealer score
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы сдались")+f" :(\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-        db.update(table='users', set='balance = ?, is_game = ?', where='user_id = ?', values=(total_win, False, message.from_user.id, ))
+        db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
         
         game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_lost=True)
 

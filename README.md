@@ -5,7 +5,7 @@ Just a simple card game telegram bot.
 **Technology:**
 - Python 3.10
 - Aiogram
-- SQLite
+- PostgreSQL
 
 **Todo:**
 - [x] English localization

@@ -7,7 +7,7 @@ from dispatcher import config
 class Game_controls(DBh):
     '''Useful functions'''
     def __init__(self):
-        super().__init__(database=config.DATABASE, user=config.USER, password=config.PASSWORD)
+        super().__init__(user=config.USER, password=config.PASSWORD)
         
     def render_cards(self, img_path, img_count, img_name):
         '''Rendering an image with gaming table and cards'''
@@ -62,15 +62,15 @@ class Game_controls(DBh):
 
         if (is_won != False):
             games_won+=1
-            super().update('user', 'games_won = ?, games_played = ?', 'user_id = ?', (games_won, games_played, user_id))
+            super().update('users', 'games_won = %s, games_played = %s', 'user_id = %s', (games_won, games_played, user_id))
         
         if (is_lost != False):
             games_lost+=1
-            super().update('user', 'games_lost = ?, games_played = ?', 'user_id = ?', (games_lost, games_played, user_id))
+            super().update('users', 'games_lost = %s, games_played = %s', 'user_id = %s', (games_lost, games_played, user_id))
         
         if (is_tied != False):
             games_tied+=1
-            super().update('user', 'games_tied = ?, games_played = ?', 'user_id = ?', (games_tied, games_played, user_id))
+            super().update('users', 'games_tied = %s, games_played = %s', 'user_id = %s', (games_tied, games_played, user_id))
 
     def get_statistics(self, user_id):
         '''get statistics'''
