@@ -15,11 +15,11 @@ async def callback_inline(call):
 			_ = locale.get_locale(user['lang'])
 
 			if call.data == "lang_russian":
-				db.update('users', 'lang = ?', 'user_id = ?', ('ru', call.from_user.id,))
+				db.update('users', 'lang = %s', 'user_id = %s', ('ru', call.from_user.id,))
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Язык успешно сменен!\nНужно перезапустить, чтоб изменения вступили в силу: /start", reply_markup=None)
 			
 			if call.data == "lang_english":
-				db.update('users', 'lang = ?', 'user_id = ?', ('en', call.from_user.id,))
+				db.update('users', 'lang = %s', 'user_id = %s', ('en', call.from_user.id,))
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="Language successfully changed!\nReload bot to apply changes: /start", reply_markup=None)
 			
 			if call.data == "change_lang":
