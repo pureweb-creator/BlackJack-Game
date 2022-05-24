@@ -13,7 +13,7 @@ conn = psycopg2.connect(
     user=config.USER,
     password=config.PASSWORD,
     host=config.HOST,
-    port=config.PORT
+    port=config.PG_PORT
    )
 conn.autocommit = True
 
