@@ -31,12 +31,17 @@ async def settigns(message: types.Message):
 @dp.message_handler(commands=['stat'])
 async def statistics(message: types.Message):
     '''user statistics'''
+
+    # get current user locale
+    user = db.load_user(message.from_user.id)
+    locale = Game_controls()
+    _ = locale.get_locale(user['lang'])
     
     stat = db.load_statistics(message.from_user.id)
 
     # prevent zero division below (if user launch bot for the first time)
     if (stat['games_played'] == 0):
-        await message.answer("У вас пока не статистики")
+        await message.answer(_("У вас пока не статистики 😔\n Сыграйте хотя бы один раз, для того чтобы она появилась"))
         return
 
     percentage = [
