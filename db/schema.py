@@ -1,16 +1,20 @@
+import sys
+import path
 import psycopg2
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+dir = path.Path(__file__).abspath()
+sys.path.append(dir.parent.parent)
 
-USER = os.getenv('USER')
-PASSWORD = os.getenv('PASSWORD')
+import config
 
 #establishing the connection
 conn = psycopg2.connect(
-   database="d4o7b3k59sdq3o", user=USER, password=PASSWORD, host='ec2-63-35-156-160.eu-west-1.compute.amazonaws.com', port= '5432'
-)
+    database=config.DATABASE,
+    user=config.USER,
+    password=config.PASSWORD,
+    host=config.HOST,
+    port=config.PORT
+   )
 conn.autocommit = True
 
 #Creating a cursor object using the cursor() method
@@ -21,6 +25,7 @@ sql = """CREATE TABLE users (id serial PRIMARY KEY, user_id integer, balance int
 
 #Creating a database
 cursor.execute(sql)
+print(cursor.fetchall())
 print("Database created successfully")
 
 #Closing the connection
