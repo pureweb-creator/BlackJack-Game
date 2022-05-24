@@ -33,6 +33,12 @@ async def statistics(message: types.Message):
     '''user statistics'''
     
     stat = db.load_statistics(message.from_user.id)
+
+    # prevent zero division below (if user launch bot for the first time)
+    if (stat['games_played'] == 0):
+        await message.answer("У вас пока не статистики")
+        return
+
     percentage = [
         round(stat['games_won']/stat['games_played']*100, 2),
         round(stat['games_lost']/stat['games_played']*100, 2),
