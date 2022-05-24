@@ -10,7 +10,7 @@ In accordance with the above you can't go on until you create bot and **postgreS
 So, if you done with it, you can follow steps below.
 
 #### Step 1
-Clone repository via https using ssh<br>
+Clone repository via https or ssh<br>
 ```git clone https://github.com/pureweb-creator/BlackJack-Game.git```<br>
 or<br>
 ```git@github.com:pureweb-creator/BlackJack-Game.git```<br>
