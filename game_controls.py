@@ -7,7 +7,7 @@ from dispatcher import config
 class Game_controls(DBh):
     '''Useful functions'''
     def __init__(self):
-        super().__init__(user=config.USER, password=config.PASSWORD)
+        super().__init__(database=config.DATABASE, user=config.USER, password=config.PASSWORD, host=config.HOST, port=config.PORT)
         
     def render_cards(self, img_path, img_count, img_name):
         '''Rendering an image with gaming table and cards'''

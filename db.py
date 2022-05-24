@@ -1,4 +1,5 @@
 import psycopg2
+import psycopg2.extras
 
 class DBh:
     def __init__(self, database, user, password, host, port):
@@ -12,12 +13,14 @@ class DBh:
         
         self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port)
         self.connection.autocommit = True
-        self.cursor = self.connection.cursor()
+        self.cursor = self.connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
         
     def load_user(self, user_id):
         """load user if exists"""
         with self.connection:
-            user = self.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,)).fetchall()
+            user = self.cursor.execute("SELECT * FROM users WHERE user_id = %s", (user_id,))
+            user = self.cursor.fetchall()
+
             if user:
                 user = [{k: item[k] for k in item.keys()} for item in user]
                 return user[0]
@@ -26,7 +29,8 @@ class DBh:
     def load_statistics(self, user_id):
         """load statistics if user exists"""
         with self.connection:
-            stat = self.cursor.execute("SELECT user_name, games_played, games_won, games_lost, games_tied, lang FROM users WHERE user_id = %s", (user_id,)).fetchall()
+            stat = self.cursor.execute("SELECT user_name, games_played, games_won, games_lost, games_tied, lang FROM users WHERE user_id = %s", (user_id,))
+            stat = self.cursor.fetchall()
             if (stat):
                 stat = [{k: item[k] for k in item.keys()} for item in stat]
                 return stat[0]
