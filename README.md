@@ -9,13 +9,8 @@ To get token you should create bot via [@BotFather](https://t.me/BotFather) bot.
 In accordance with the above you can't go on until you create bot and **postgreSQL** database.
 So, if you done with it, you can follow steps below.
 
-<<<<<<< HEAD
-#### Step 1
-Clone repository via https or ssh<br>
-=======
 ### Step 1
 Clone this repository via https
->>>>>>> 44c2018baa8c1b3d92813dfa3a2ed3b98ee54433
 ```git clone https://github.com/pureweb-creator/BlackJack-Game.git```<br>
 or ssh ```git@github.com:pureweb-creator/BlackJack-Game.git```<br>
 ### Step 2
