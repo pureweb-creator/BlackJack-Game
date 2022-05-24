@@ -2,3 +2,4 @@ aiogram==2.20
 Pillow==9.1.1
 psycopg2==2.9.3
 python-dotenv==0.20.0
+path==16.4.0
