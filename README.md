@@ -3,7 +3,7 @@
 Just a simple card game telegram bot.
 
 ## **How to launch bot in your PC**
-If you decided to launch this bot in your local machine, you should necessairly obsess a **PostgreSQL** database and telegram bot token.
+If you decided to launch this bot in your local machine, you should necessairly posess a **PostgreSQL** database and telegram bot token.
 To get token you should create bot via [@BotFather](https://t.me/BotFather) bot. Don't loose this token.
 
 In accordance with the above you can't go on until you create bot and **postgreSQL** database.
