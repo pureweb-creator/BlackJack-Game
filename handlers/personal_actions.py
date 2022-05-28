@@ -7,6 +7,8 @@ from dispatcher import dp
 from dispatcher import bot
 from bot import db
 
+from datetime import datetime, timezone
+
 from game_controls import Game_controls, Keyboard
 
 dealer_score = 0
@@ -125,7 +127,11 @@ async def process_start_game(message: types.Message):
     kbd = Keyboard(user['lang'])
     main_menu_markup = kbd.new_game()
 
-    db.update('users','is_game = %s','user_id = %s',(False,message.from_user.id,))
+
+    # Getting the current date and time
+    dt = datetime.now()
+
+    db.update('users','is_game = %s, last_played = %s','user_id = %s',(False, dt, message.from_user.id,))
     await message.answer(_("♦️ Добро пожаловать в блэк-джек ♦️"), reply_markup=main_menu_markup)
 
 # main game logic
@@ -146,14 +152,17 @@ async def process_handler(message: types.Message):
             deck = json.load(input_f)
         input_f.close()
 
-        db.update(table='users', set='deck = %s', where='user_id = %s', values=(str(deck), message.from_user.id,))
+        db.update(table='users', set='deck = %s, user_nickname = %s', where='user_id = %s', values=(str(deck), message.from_user.username, message.from_user.id,))
+
+        # Getting the current date and time
+        dt = datetime.now()
 
         # update player score is he lost everything
         if user['balance'] < 1:
             user['balance'] = 100
-            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(100, True, message.from_user.id,))
+            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(100, True, dt, message.from_user.id,))
 
-        else: db.update(table='users', set='is_game = %s', where='user_id = %s', values=(True, message.from_user.id,))
+        else: db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(True, dt, message.from_user.id,))
 
         # keyboard
         kbd = Keyboard(user['lang'])
@@ -256,7 +265,11 @@ async def process_handler(message: types.Message):
             # updating player score
             current_win = float(bet)*float(1.5)
             total_win = current_win+float(user['balance'])
-            db.update(table='users', set='player_score = %s, is_game = %s, balance = %s', where='user_id = %s', values=(user['player_score'], False, total_win, message.from_user.id, ))
+
+            # Getting the current date and time
+            dt = datetime.now()
+
+            db.update(table='users', set='player_score = %s, is_game = %s, last_played = %s, balance = %s', where='user_id = %s', values=(user['player_score'], False, dt, total_win, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
             
             # pring player cards and score
@@ -320,8 +333,11 @@ async def process_handler(message: types.Message):
 
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
+
+            # Getting the current date and time
+            dt = datetime.now()
             
-            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
             
@@ -357,7 +373,11 @@ async def process_handler(message: types.Message):
                 
                 # print player score
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Перебор! Вы проиграли")+" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
-                db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+
+                # Getting the current date and time
+                dt = datetime.now()
+
+                db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
                 
                 game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
 
@@ -446,7 +466,10 @@ async def process_handler(message: types.Message):
                     main_menu_markup = kbd.new_game()
                     await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-                    db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+                    # Getting the current date and time
+                    dt = datetime.now()
+
+                    db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
                     
                     game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
 
@@ -484,7 +507,10 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+            # Getting the current date and time
+            dt = datetime.now()
+
+            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_won=True)
 
         # dealer wins
@@ -506,7 +532,10 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-            db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+            # Getting the current date and time
+            dt = datetime.now()
+
+            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
     
         # TIE game
@@ -529,7 +558,10 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Ничья"), reply_markup=main_menu_markup)
 
-            db.update(table='users', set='is_game = %s', where='user_id = %s', values=(False, message.from_user.id,))
+            # Getting the current date and time
+            dt = datetime.now()
+
+            db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(False, dt, message.from_user.id,))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_tied=True)
 
     # if player gives up
@@ -568,7 +600,10 @@ async def process_handler(message: types.Message):
         # print dealer score
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы сдались")+f" :(\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-        db.update(table='users', set='balance = %s, is_game = %s', where='user_id = %s', values=(total_win, False, message.from_user.id, ))
+        # Getting the current date and time
+        dt = datetime.now()
+
+        db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
         
         game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_lost=True)
 
