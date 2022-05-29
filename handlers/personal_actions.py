@@ -7,7 +7,7 @@ from dispatcher import dp
 from dispatcher import bot
 from bot import db
 
-from datetime import datetime, timezone
+from datetime import datetime, timedelta
 
 from game_controls import Game_controls, Keyboard
 
@@ -129,7 +129,7 @@ async def process_start_game(message: types.Message):
 
 
     # Getting the current date and time
-    dt = datetime.now()
+    dt = datetime.utcnow()+timedelta(hours=3)
 
     db.update('users','is_game = %s, last_played = %s','user_id = %s',(False, dt, message.from_user.id,))
     await message.answer(_("♦️ Добро пожаловать в блэк-джек ♦️"), reply_markup=main_menu_markup)
@@ -155,7 +155,7 @@ async def process_handler(message: types.Message):
         db.update(table='users', set='deck = %s, user_nickname = %s', where='user_id = %s', values=(str(deck), message.from_user.username, message.from_user.id,))
 
         # Getting the current date and time
-        dt = datetime.now()
+        dt = datetime.utcnow()+timedelta(hours=3)
 
         # update player score is he lost everything
         if user['balance'] < 1:
@@ -267,7 +267,7 @@ async def process_handler(message: types.Message):
             total_win = current_win+float(user['balance'])
 
             # Getting the current date and time
-            dt = datetime.now()
+            dt = datetime.utcnow()+timedelta(hours=3)
 
             db.update(table='users', set='player_score = %s, is_game = %s, last_played = %s, balance = %s', where='user_id = %s', values=(user['player_score'], False, dt, total_win, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
@@ -335,7 +335,7 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
             # Getting the current date and time
-            dt = datetime.now()
+            dt = datetime.utcnow()+timedelta(hours=3)
             
             db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             
@@ -375,7 +375,7 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Перебор! Вы проиграли")+" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
                 # Getting the current date and time
-                dt = datetime.now()
+                dt = datetime.utcnow()+timedelta(hours=3)
 
                 db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
                 
@@ -467,7 +467,7 @@ async def process_handler(message: types.Message):
                     await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
                     # Getting the current date and time
-                    dt = datetime.now()
+                    dt = datetime.utcnow()+timedelta(hours=3)
 
                     db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
                     
@@ -508,7 +508,7 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
             # Getting the current date and time
-            dt = datetime.now()
+            dt = datetime.utcnow()+timedelta(hours=3)
 
             db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_won=True)
@@ -533,7 +533,7 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
             # Getting the current date and time
-            dt = datetime.now()
+            dt = datetime.utcnow()+timedelta(hours=3)
 
             db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
@@ -559,7 +559,7 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Ничья"), reply_markup=main_menu_markup)
 
             # Getting the current date and time
-            dt = datetime.now()
+            dt = datetime.utcnow()+timedelta(hours=3)
 
             db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(False, dt, message.from_user.id,))
             game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_tied=True)
@@ -601,7 +601,7 @@ async def process_handler(message: types.Message):
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы сдались")+f" :(\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
         # Getting the current date and time
-        dt = datetime.now()
+        dt = datetime.utcnow()+timedelta(hours=3)
 
         db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
         
