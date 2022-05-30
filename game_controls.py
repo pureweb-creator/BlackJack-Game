@@ -1,8 +1,10 @@
 import gettext
+from config import GAME_LOST, GAME_TIED, GAME_WIN, IS_ALL_IN
 from db import DBh
 from PIL import Image
 from aiogram import types
 from dispatcher import config
+from datetime import datetime, timedelta
 
 class Game_controls(DBh):
     '''Useful functions'''
@@ -49,28 +51,72 @@ class Game_controls(DBh):
             gettext.textdomain('blackjack')
             return gettext.gettext
 
-    def collect_statistics(self, user_id, is_played=False, is_won=False, is_lost=False, is_tied=False):
-        '''collect some statistics for player'''
-        user = super().load_statistics(user_id)
-        games_won = user['games_won']
+    def collect_statistics(self, user_id, game_result, balance, current_win=None, is_all_in=None): # default values could be None type cuz tied game result has not win or all-in param
+        '''Collect statistics'''
+        user = super().load_user(user_id)
+
+        # Getting the current date and time
+        dt = datetime.utcnow()+timedelta(hours=3)
+
+        # increment all games count
         games_played = user['games_played']
-        games_tied = user['games_tied']
-        games_lost = user['games_lost']
+        games_played += 1
 
-        if (is_played != False):
-            games_played+=1
+        # updates common info 
+        super().update(
+            table='users',
+            set='player_score = %s, is_game = %s, last_played = %s, balance = %s, games_played = %s',
+            where='user_id = %s',
+            values=(user['player_score'], False, dt, balance, games_played, user_id )
+        )
 
-        if (is_won != False):
-            games_won+=1
-            super().update('users', 'games_won = %s, games_played = %s', 'user_id = %s', (games_won, games_played, user_id))
+        # updates specific info
+        if (is_all_in == IS_ALL_IN):
+            all_in_games_count = user['all_in_games_count']
+            all_in_games_count += 1
+            super().update(table="users", set="all_in_games_count = %s", where="user_id = %s", values=(all_in_games_count, user_id, ))
+
+        if (game_result == GAME_WIN):
+            games_won = user['games_won']
+            games_won += 1
+            max_win = user['max_win']
+
+            super().update(table='users', set='games_won = %s', where='user_id = %s', values=(games_won, user_id ))
+
+            if (current_win > max_win):
+                max_win = current_win
+                super().update(table='users', set='max_win = %s', where='user_id = %s', values=(max_win, user_id, ))
+
+            if (is_all_in == IS_ALL_IN):
+                all_in_win = user['all_in_win']
+                all_in_win += 1
+                super().update(table="users",set="all_in_win = %s", where="user_id = %s", values=(all_in_win, user_id, ))
         
-        if (is_lost != False):
-            games_lost+=1
-            super().update('users', 'games_lost = %s, games_played = %s', 'user_id = %s', (games_lost, games_played, user_id))
-        
-        if (is_tied != False):
+        if (game_result == GAME_LOST):
+            games_lost = user['games_lost']
+            games_lost += 1
+            max_loss = user['max_loss']
+
+            super().update(table='users', set='games_lost = %s', where='user_id = %s', values=(games_lost, user_id ))
+
+            if (user['bet'] > max_loss):
+                max_loss = user['bet']
+                super().update(table='users', set='max_loss = %s', where='user_id = %s', values=(max_loss, user_id, ))
+
+            if (is_all_in == IS_ALL_IN):
+                all_in_loss = user['all_in_loss']
+                all_in_loss += 1
+                super().update(table="users",set="all_in_loss = %s", where="user_id = %s", values=(all_in_loss, user_id, ))
+
+        if (game_result == GAME_TIED):
+            games_tied = user['games_tied']
             games_tied+=1
-            super().update('users', 'games_tied = %s, games_played = %s', 'user_id = %s', (games_tied, games_played, user_id))
+            super().update(table="users",set="games_tied = %s", where="user_id = %s", values=(games_tied, user_id, ))
+
+            if (is_all_in == IS_ALL_IN):
+                all_in_tie = user['all_in_tie']
+                all_in_tie += 1
+                super().update(table="users",set="all_in_tie = %s", where="user_id = %s", values=(all_in_tie, user_id, ))
 
     def get_statistics(self, user_id):
         '''get statistics'''

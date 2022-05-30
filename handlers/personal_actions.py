@@ -1,10 +1,10 @@
 import json
 import random
-import gettext
 
 from aiogram import types
 from dispatcher import dp
 from dispatcher import bot
+from dispatcher import config
 from bot import db
 
 from datetime import datetime, timedelta
@@ -50,18 +50,29 @@ async def statistics(message: types.Message):
         round(stat['games_won']/stat['games_played']*100, 2),
         round(stat['games_lost']/stat['games_played']*100, 2),
         round(stat['games_tied']/stat['games_played']*100, 2),
+        round(stat['all_in_win']/stat['all_in_games_count']*100),
+        round(stat['all_in_loss']/stat['all_in_games_count']*100),
+        round(stat['all_in_tie']/stat['all_in_games_count']*100)
     ]
 
     locale = Game_controls()
     _ = locale.get_locale(stat['lang'])
     
     msg = "📈 <b>"+_("Ваша статистика")+"</b>" \
-    +"\n\n<b>"+_("Имя")+f": {stat['user_name']}</b>\n" \
+    +"\n\n<b>"+_("Имя")+f": {message.from_user.first_name}</b>\n" \
     +"🎲 "+_("Игр сыграно")+f": <b>{stat['games_played']}</b>\n" \
     +"✅ "+_("Игр выиграно")+f": <b>{stat['games_won']} ({percentage[0]}%)</b>\n" \
     +"❌ "+_("Игр проиграно")+f": <b>{stat['games_lost']} ({percentage[1]}%)</b>\n" \
-    +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage[2]}%)</b>"
-
+    +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage[2]}%)</b>\n\n" \
+    +"⏩ "+_("Максимальный выигрыш")+f": <b>{stat['max_win']}</b>\n" \
+    +"⏪ "+_("Максимальный проигрыш")+f": <b>{stat['max_loss']}</b>\n\n" \
+    +"🤑 "+_("Пошли ва-банк (раз)")+f": <b>{stat['all_in_games_count']}</b>\n" \
+    +_("Из них: ")+"\n" \
+    +"✅ "+_("Выиграли")+f": <b>{stat['all_in_win']} ({percentage[3]}%)</b>\n" \
+    +"❌ "+_("Проиграли")+f": <b>{stat['all_in_loss']} ({percentage[4]}%)</b>\n" \
+    +"😐 "+_("Вничью")+f": <b>{stat['all_in_tie']} ({percentage[5]}%)</b>\n\n" \
+    +"⏰ "+_("Последний раз играли")+f": <b>{stat['last_played'].strftime('%m/%d/%Y, %H:%M')}</b>\n" \
+        
     await message.answer(msg)
     
 # get help command
@@ -138,6 +149,9 @@ async def process_start_game(message: types.Message):
 @dp.message_handler(content_types=["text"])
 async def process_handler(message: types.Message):
     '''button handlers'''
+    global is_all_in
+    
+    is_all_in  = False # variable for check below in statistics. Default false
     user = db.load_user(message.from_user.id)
 
     game_controls = Game_controls()
@@ -181,16 +195,16 @@ async def process_handler(message: types.Message):
         choose_bet_markup = kbd.bet(user)
         await message.answer(_("Сделайте ставку"), reply_markup=choose_bet_markup)
 
+    # When player chosed bet, we can start a new game
     if ("🪙" in message.text or _("Ва-банк! 🤑") in message.text):
+        # basic check
         user = db.load_user(message.from_user.id)
-
         if (user['is_game'] == False):
             await message.answer(_("Для начала начните новую игру"))
             return;
 
-        '''Start game'''
-        global dealer_score, player_score, player_cards, dealer_cards, bet
         # reset all our local variables
+        global dealer_score, player_score, player_cards, dealer_cards, bet
         deck         = []
         dealer_cards = []
         player_cards = []
@@ -198,22 +212,30 @@ async def process_handler(message: types.Message):
         dealer_score = 0
         deck         = list(eval(user['deck']))
 
-        # keyboard
+        # render keyboard
         kbd = Keyboard(user['lang'])
         game_controls_markup = kbd.game_nav_1()
         
+        # save in db if player chosed All-in game
         if (_("Ва-банк! 🤑") in message.text):
             bet = user['balance']
+            db.update('users','is_all_in = %s', 'user_id = %s', (True, message.from_user.id))
         else:
             bet = message.text.split()[0]
+            db.update('users','is_all_in = %s', 'user_id = %s', (False, message.from_user.id))
 
+        # update bet in db
         db.update(table='users', set='bet = %s',where='user_id = %s', values=(bet, message.from_user.id,))
+        # and load
         user = db.load_user(message.from_user.id)
+        is_all_in = user['is_all_in'] # true if player chosed All in, or False if not
 
+        # basic check 
         if (int(bet) > int(user['balance'])):
             await message.answer(_("На вашем балансе недостаточно средств."))
             return
 
+        # show message
         await message.answer(_("Ставка в {} принята.🤑 Приятной игры!").format(message.text))
         
         # Initial dealing. Two cards for both
@@ -243,9 +265,10 @@ async def process_handler(message: types.Message):
         db.update(table='users', set='player_score = %s, deck = %s, player_cards = %s, dealer_cards = %s, dealer_score = %s', where='user_id = %s', values=(player_score, str(deck), str(player_cards), str(dealer_cards), dealer_score, message.from_user.id,))
 
         img = Game_controls()
+        # render dealer hided cards
         img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
+        # render player cards
         img.render_cards([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
-        
     
         # print dealer cards and score          
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
@@ -256,7 +279,7 @@ async def process_handler(message: types.Message):
         user = db.load_user(message.from_user.id)
         await bot.send_message(message.chat.id, "⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}", reply_markup=game_controls_markup)
 
-        # Player gets a blackjack  
+        # Player gets a blackjack (WIN)
         if (player_score == 21):
             # set a keyboard
             kbd = Keyboard(user['lang'])
@@ -264,23 +287,22 @@ async def process_handler(message: types.Message):
             
             # updating player score
             current_win = float(bet)*float(1.5)
-            total_win = current_win+float(user['balance'])
-
-            # Getting the current date and time
-            dt = datetime.utcnow()+timedelta(hours=3)
-
-            db.update(table='users', set='player_score = %s, is_game = %s, last_played = %s, balance = %s', where='user_id = %s', values=(user['player_score'], False, dt, total_win, message.from_user.id, ))
-            game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
+            total_win = current_win+user['balance']
+            
+            # updates a lot of data in database
+            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN, balance=total_win, current_win=current_win, is_all_in=is_all_in)
             
             # pring player cards and score
             await message.answer(_("У вас Блэк-Джек! Вы победили!")+" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
     # if player decides to go on
     if (message.text == _("Еще 🟢")):
+        # load from db
         user         = db.load_user(message.from_user.id)
         dealer_cards = list(eval(user['dealer_cards']))
         player_cards = list(eval(user['player_cards']))
         deck         = list(eval(user['deck']))
+        is_all_in    = user['is_all_in']
 
         # basic check 
         if (user['is_game'] == False):
@@ -303,7 +325,7 @@ async def process_handler(message: types.Message):
         img = Game_controls()
         # render player cards
         img.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
-        # render dealer hidden cards
+        # render dealer hided cards
         img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
         # render dealer revealed cards
         img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
@@ -334,12 +356,7 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-            # Getting the current date and time
-            dt = datetime.utcnow()+timedelta(hours=3)
-            
-            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
-            
-            game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
+            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN,  current_win=current_win, is_all_in=is_all_in, balance=total_win)
             
             return;
 
@@ -362,7 +379,6 @@ async def process_handler(message: types.Message):
                 user = db.load_user(message.from_user.id)
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Карты дилера")+f": </b> {user['dealer_score']}")
 
-
                 # print player cards
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
                 user = db.load_user(message.from_user.id)
@@ -374,16 +390,11 @@ async def process_handler(message: types.Message):
                 # print player score
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Перебор! Вы проиграли")+" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-                # Getting the current date and time
-                dt = datetime.utcnow()+timedelta(hours=3)
-
-                db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
-                
-                game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
+                game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
 
                 return;
 
-        # print dealer cards and score
+        # print dealer hided cards and score
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Карты дилера")+f": </b> "+_("Скрыто"))
 
@@ -399,8 +410,10 @@ async def process_handler(message: types.Message):
         dealer_cards = list(eval(user['dealer_cards']))
         player_cards = list(eval(user['player_cards']))
         deck         = list(eval(user['deck']))
+        is_all_in    = user['is_all_in']
         img_path_dealer = []
         img_path        = []
+
 
         # basic check
         if (user['is_game'] == False):
@@ -466,12 +479,7 @@ async def process_handler(message: types.Message):
                     main_menu_markup = kbd.new_game()
                     await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-                    # Getting the current date and time
-                    dt = datetime.utcnow()+timedelta(hours=3)
-
-                    db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
-                    
-                    game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_won=True)
+                    game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN, current_win=current_win,is_all_in=is_all_in, balance=total_win)
 
                     return
                 break
@@ -479,16 +487,16 @@ async def process_handler(message: types.Message):
         user = db.load_user(message.from_user.id)            
         dealer_cards = list(eval(user['dealer_cards']))
 
+        # generate cards image
         for i in range(len(dealer_cards)):
             img_path_dealer.append(dealer_cards[i]['image'])
-
         img = Game_controls()
         img.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
         
         # player wins
         if (user['dealer_score'] < user['player_score']):
             current_win = float(user['bet'])
-             # update player score
+            # update player score
             total_win = current_win+user['balance']
             
             # print dealer cards and score
@@ -496,7 +504,6 @@ async def process_handler(message: types.Message):
             user = db.load_user(message.from_user.id)
             await message.answer(f"⬆️ 👽 <b>"+_("Карты дилера")+f": </b> {user['dealer_score']}")
             
-
             # print player cards and score
             await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
             user = db.load_user(message.from_user.id)
@@ -507,11 +514,7 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-            # Getting the current date and time
-            dt = datetime.utcnow()+timedelta(hours=3)
-
-            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
-            game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_won=True)
+            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN,current_win=current_win, is_all_in=is_all_in, balance=total_win)
 
         # dealer wins
         if (user['dealer_score'] > user['player_score']):
@@ -532,11 +535,7 @@ async def process_handler(message: types.Message):
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
-            # Getting the current date and time
-            dt = datetime.utcnow()+timedelta(hours=3)
-
-            db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
-            game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_lost=True)
+            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
     
         # TIE game
         if (user['dealer_score'] == user['player_score']):
@@ -558,18 +557,16 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Ничья"), reply_markup=main_menu_markup)
 
-            # Getting the current date and time
-            dt = datetime.utcnow()+timedelta(hours=3)
-
-            db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(False, dt, message.from_user.id,))
-            game_controls.collect_statistics(user_id=message.from_user.id, is_played=True,is_tied=True)
+            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_TIED, balance=user['balance'], is_all_in=is_all_in)
 
     # if player gives up
     if (message.text == _("Сдаюсь 😵")):
+        # loading main variables from db
         user         = db.load_user(message.from_user.id)
         dealer_cards = list(eval(user['dealer_cards']))
         player_cards = list(eval(user['player_cards']))
         deck         = list(eval(user['deck']))
+        is_all_in    = user['is_all_in']
 
         # basic check
         if (user['is_game'] == False):
@@ -577,10 +574,9 @@ async def process_handler(message: types.Message):
             return;
 
         # update score
-        total_win = user['balance']-float(user['bet']) 
+        total_win = user['balance']-float(user['bet'])
         
         img = Game_controls()
-        
         # render dealer revealed cards
         img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
         
@@ -599,13 +595,10 @@ async def process_handler(message: types.Message):
 
         # print dealer score
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы сдались")+f" :(\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
-
-        # Getting the current date and time
-        dt = datetime.utcnow()+timedelta(hours=3)
-
-        db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(total_win, False, dt, message.from_user.id, ))
         
-        game_controls.collect_statistics(user_id=message.from_user.id, is_played=True, is_lost=True)
+        # upates a lot of data in database
+        game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
+
 
     # view balance
     if (message.text == _("Просмотреть баланс 💰")):
