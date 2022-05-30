@@ -41,18 +41,13 @@ async def statistics(message: types.Message):
     
     stat = db.load_statistics(message.from_user.id)
 
-    # prevent zero division below (if user launch bot for the first time)
-    if (stat['games_played'] == 0):
-        await message.answer(_("У вас пока не статистики 😔\n Сыграйте хотя бы один раз, для того чтобы она появилась"))
-        return
-
     percentage = [
-        round(stat['games_won']/stat['games_played']*100, 2),
-        round(stat['games_lost']/stat['games_played']*100, 2),
-        round(stat['games_tied']/stat['games_played']*100, 2),
-        round(stat['all_in_win']/stat['all_in_games_count']*100),
-        round(stat['all_in_loss']/stat['all_in_games_count']*100),
-        round(stat['all_in_tie']/stat['all_in_games_count']*100)
+        round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+        round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+        round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+        round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+        round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+        round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0)
     ]
 
     locale = Game_controls()
