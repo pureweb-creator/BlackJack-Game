@@ -154,6 +154,7 @@ async def process_handler(message: types.Message):
     is_all_in  = False # variable for check below in statistics. Default false
     user = db.load_user(message.from_user.id)
 
+    # global declaration
     game_controls = Game_controls()
     _ = game_controls.get_locale(user['lang'])
 
