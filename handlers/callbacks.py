@@ -45,5 +45,23 @@ async def callback_inline(call):
 				settings_markup = types.InlineKeyboardMarkup().add(btn1, btn2)
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Настройки 🛠")+"</b>", reply_markup=settings_markup)
 
+			# confirmation message for clear statistics action
+			if call.data == "confirmation":
+				btn1 = types.InlineKeyboardButton(_("Да 🆗"), callback_data="clear_statistics")
+				btn2 = types.InlineKeyboardButton(_("Отмена 🙅‍♂️"), callback_data="back_to_statistics")
+				confirmation_markup = types.InlineKeyboardMarkup().add(btn1, btn2)
+				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Вы уверены? Это приведет к полной потере всех ваших данных!"+"</b>"), reply_markup=confirmation_markup)
+
+			if call.data == "back_to_statistics":
+				stat = Game_controls()
+				msg, markup = await stat.print_statistics(call.from_user.id, call.from_user.first_name)
+				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg, reply_markup=markup)
+
+			if call.data == "clear_statistics":
+				db.update("users", "games_played = %s, games_won = %s, games_lost = %s, games_tied = %s, max_win = %s, max_loss = %s, all_in_games_count = %s, all_in_win = %s, all_in_loss = %s, all_in_tie = %s", "user_id = %s", (0,0,0,0,0,0,0,0,0,0, call.message.chat.id))
+
+				stat = Game_controls()
+				msg, markup = await stat.print_statistics(call.from_user.id, call.from_user.first_name)
+				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg, reply_markup=markup)				
 	except Exception as e:
 		print(repr(e))

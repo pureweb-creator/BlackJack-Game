@@ -122,6 +122,44 @@ class Game_controls(DBh):
         '''get statistics'''
         return super().load_statistics(user_id)
 
+    async def print_statistics(self, user_id, user_name):
+        '''print user statistics'''
+
+        # get current user locale
+        user = super().load_user(user_id)
+        _ = self.get_locale(user['lang'])
+        
+        stat = super().load_statistics(user_id)
+
+        percentage = [
+            round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+            round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+            round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0)
+        ]
+        
+        msg = "📈 <b>"+_("Ваша статистика")+"</b>" \
+        +"\n\n<b>"+_("Имя")+f": {user_name}</b>\n" \
+        +"🎲 "+_("Игр сыграно")+f": <b>{stat['games_played']}</b>\n" \
+        +"✅ "+_("Игр выиграно")+f": <b>{stat['games_won']} ({percentage[0]}%)</b>\n" \
+        +"❌ "+_("Игр проиграно")+f": <b>{stat['games_lost']} ({percentage[1]}%)</b>\n" \
+        +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage[2]}%)</b>\n\n" \
+        +"⏩ "+_("Максимальный выигрыш")+f": <b>{stat['max_win']}</b>\n" \
+        +"⏪ "+_("Максимальный проигрыш")+f": <b>{stat['max_loss']}</b>\n\n" \
+        +"🤑 "+_("Пошли ва-банк (раз)")+f": <b>{stat['all_in_games_count']}</b>\n" \
+        +_("Из них: ")+"\n" \
+        +"✅ "+_("Выиграли")+f": <b>{stat['all_in_win']} ({percentage[3]}%)</b>\n" \
+        +"❌ "+_("Проиграли")+f": <b>{stat['all_in_loss']} ({percentage[4]}%)</b>\n" \
+        +"😐 "+_("Вничью")+f": <b>{stat['all_in_tie']} ({percentage[5]}%)</b>\n\n" \
+        +"⏰ "+_("Последний раз играли")+f": <b>{stat['last_played'].strftime('%m/%d/%Y, %H:%M')}</b>\n" \
+        
+        btn = types.InlineKeyboardButton(_('🆑 Сбросить статистику'), callback_data="confirmation")
+        markup = types.InlineKeyboardMarkup().add(btn)
+
+        return msg, markup
+
 class Keyboard:
     '''Set of keyboards'''
     def __init__(self, lang):

@@ -32,43 +32,9 @@ async def settigns(message: types.Message):
 # stat command
 @dp.message_handler(commands=['stat'])
 async def statistics(message: types.Message):
-    '''user statistics'''
-
-    # get current user locale
-    user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
-    
-    stat = db.load_statistics(message.from_user.id)
-
-    percentage = [
-        round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-        round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-        round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-        round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-        round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-        round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0)
-    ]
-
-    locale = Game_controls()
-    _ = locale.get_locale(stat['lang'])
-    
-    msg = "📈 <b>"+_("Ваша статистика")+"</b>" \
-    +"\n\n<b>"+_("Имя")+f": {message.from_user.first_name}</b>\n" \
-    +"🎲 "+_("Игр сыграно")+f": <b>{stat['games_played']}</b>\n" \
-    +"✅ "+_("Игр выиграно")+f": <b>{stat['games_won']} ({percentage[0]}%)</b>\n" \
-    +"❌ "+_("Игр проиграно")+f": <b>{stat['games_lost']} ({percentage[1]}%)</b>\n" \
-    +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage[2]}%)</b>\n\n" \
-    +"⏩ "+_("Максимальный выигрыш")+f": <b>{stat['max_win']}</b>\n" \
-    +"⏪ "+_("Максимальный проигрыш")+f": <b>{stat['max_loss']}</b>\n\n" \
-    +"🤑 "+_("Пошли ва-банк (раз)")+f": <b>{stat['all_in_games_count']}</b>\n" \
-    +_("Из них: ")+"\n" \
-    +"✅ "+_("Выиграли")+f": <b>{stat['all_in_win']} ({percentage[3]}%)</b>\n" \
-    +"❌ "+_("Проиграли")+f": <b>{stat['all_in_loss']} ({percentage[4]}%)</b>\n" \
-    +"😐 "+_("Вничью")+f": <b>{stat['all_in_tie']} ({percentage[5]}%)</b>\n\n" \
-    +"⏰ "+_("Последний раз играли")+f": <b>{stat['last_played'].strftime('%m/%d/%Y, %H:%M')}</b>\n" \
-        
-    await message.answer(msg)
+    stat = Game_controls()
+    msg, markup = await stat.print_statistics(message.from_user.id, message.from_user.first_name)
+    await message.answer(msg, reply_markup=markup)
     
 # get help command
 @dp.message_handler(commands=['help'])
