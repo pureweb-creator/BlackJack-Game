@@ -50,7 +50,7 @@ async def callback_inline(call):
 				btn1 = types.InlineKeyboardButton(_("Да 🆗"), callback_data="clear_statistics")
 				btn2 = types.InlineKeyboardButton(_("Отмена 🙅‍♂️"), callback_data="back_to_statistics")
 				confirmation_markup = types.InlineKeyboardMarkup().add(btn1, btn2)
-				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Вы уверены? Это приведет к полной потере всех ваших данных!"+"</b>"), reply_markup=confirmation_markup)
+				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Вы уверены? Это приведет к полной потере всех ваших данных!")+"</b>", reply_markup=confirmation_markup)
 
 			if call.data == "back_to_statistics":
 				stat = Game_controls()

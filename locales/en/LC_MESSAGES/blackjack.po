@@ -157,7 +157,7 @@ msgid "Отмена 🙅‍♂️"
 msgstr "Cancel 🙅‍♂️"
 
 #: handlers/callbacks.py:53
-msgid "Вы уверены? Это приведет к полной потере всех ваших данных!</b>"
+msgid "Вы уверены? Это приведет к полной потере всех ваших данных!"
 msgstr "Are you sure? It will lead to full loosing all your data!"
 
 #: handlers/personal_actions.py:45
