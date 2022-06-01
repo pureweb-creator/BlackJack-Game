@@ -58,7 +58,7 @@ async def callback_inline(call):
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg, reply_markup=markup)
 
 			if call.data == "clear_statistics":
-				db.update("users", "games_played = %s, games_won = %s, games_lost = %s, games_tied = %s, max_win = %s, max_loss = %s, all_in_games_count = %s, all_in_win = %s, all_in_loss = %s, all_in_tie = %s", "user_id = %s", (0,0,0,0,0,0,0,0,0,0, call.message.chat.id))
+				db.update("users", "games_played = %s, games_won = %s, games_lost = %s, games_tied = %s, max_win = %s, max_loss = %s, all_in_games_count = %s, all_in_win = %s, all_in_loss = %s, all_in_tie = %s", "user_id = %s, blackjack_count = %s", (0,0,0,0,0,0,0,0,0,0,0, call.message.chat.id))
 
 				stat = Game_controls()
 				msg, markup = await stat.print_statistics(call.from_user.id, call.from_user.first_name)
