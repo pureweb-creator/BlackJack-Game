@@ -29,7 +29,7 @@ class DBh:
     def load_statistics(self, user_id):
         """load statistics if user exists"""
         with self.connection:
-            stat = self.cursor.execute("SELECT user_name, games_played, games_won, games_lost, games_tied, last_played, lang, all_in_games_count, max_win, max_loss, all_in_win, all_in_loss, all_in_tie FROM users WHERE user_id = %s", (user_id,))
+            stat = self.cursor.execute("SELECT user_name, games_played, games_won, games_lost, games_tied, last_played, lang, all_in_games_count, max_win, max_loss, all_in_win, all_in_loss, all_in_tie, blackjack_count FROM users WHERE user_id = %s", (user_id,))
             stat = self.cursor.fetchall()
             if (stat):
                 stat = [{k: item[k] for k in item.keys()} for item in stat]

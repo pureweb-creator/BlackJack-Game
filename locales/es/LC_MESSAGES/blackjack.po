@@ -1,4 +1,4 @@
-# English translations for PROJECT.
+# Spanish translations for PROJECT.
 # Copyright (C) 2022 ORGANIZATION
 # This file is distributed under the same license as the PROJECT project.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2022.
@@ -8,10 +8,10 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2022-06-01 13:58+0300\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"PO-Revision-Date: 2022-05-31 12:45+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: en\n"
-"Language-Team: en <LL@li.org>\n"
+"Language: es\n"
+"Language-Team: es <LL@li.org>\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -20,157 +20,153 @@ msgstr ""
 
 #: game_controls.py:148
 msgid "Ваша статистика"
-msgstr "Your statistics"
+msgstr ""
 
 #: game_controls.py:149
 msgid "Имя"
-msgstr "Name"
+msgstr ""
 
 #: game_controls.py:150
 msgid "Игр сыграно"
-msgstr "All games"
+msgstr ""
 
 #: game_controls.py:151
 msgid "Игр выиграно"
-msgstr "Won games"
+msgstr ""
 
 #: game_controls.py:152
 msgid "Блэк-Джек"
-msgstr "Gets BlackJack"
+msgstr ""
 
 #: game_controls.py:153
 msgid "Игр проиграно"
-msgstr "Lost games"
+msgstr ""
 
 #: game_controls.py:154
 msgid "Игр вничью"
-msgstr "Tied games"
+msgstr ""
 
 #: game_controls.py:155
 msgid "Максимальный выигрыш"
-msgstr "Max win"
+msgstr ""
 
 #: game_controls.py:156
 msgid "Максимальный проигрыш"
-msgstr "Max loss"
+msgstr ""
 
 #: game_controls.py:157
 msgid "Пошли ва-банк (раз)"
-msgstr "All-in (times)"
+msgstr ""
 
 #: game_controls.py:158
 msgid "Из них: "
-msgstr "Of them: "
+msgstr ""
 
 #: game_controls.py:159
 msgid "Выиграли"
-msgstr "Won"
+msgstr ""
 
 #: game_controls.py:160
 msgid "Проиграли"
-msgstr "Lost"
+msgstr ""
 
 #: game_controls.py:161
 msgid "Вничью"
-msgstr "Tied game"
+msgstr ""
 
 #: game_controls.py:162
 msgid "Последний раз играли"
-msgstr "Last game"
+msgstr ""
 
 #: game_controls.py:164
 msgid "🆑 Сбросить статистику"
-msgstr "🆑 Drop statistics"
+msgstr ""
 
-# English translations Blackjack.
-# Copyright (C) 2022 BugLagFeature
-# This file is distributed under the same license as the Blackjack project.
-# FIRST AUTHOR <roman.semenikhin99@gmail.com>, 2022.
 #: game_controls.py:187 handlers/personal_actions.py:122
 msgid "Начать новую игру 🎮"
-msgstr "Start new game 🎮"
+msgstr ""
 
 #: game_controls.py:188 handlers/personal_actions.py:580
 msgid "Просмотреть баланс 💰"
-msgstr "My balance 💰"
+msgstr ""
 
 #: game_controls.py:193 handlers/personal_actions.py:149
 msgid "Играть с компьютером 🧠"
-msgstr "With bot 🧠"
+msgstr ""
 
 #: game_controls.py:194
 msgid "Играть с другом 👨‍🦰 (в разработке </>)"
-msgstr "With a friend 👨‍🦰 (developing </>)"
+msgstr ""
 
 #: game_controls.py:200 handlers/personal_actions.py:54
 #: handlers/personal_actions.py:582
 msgid "💰 Баланс: "
-msgstr "💰 Balance: "
+msgstr ""
 
 #: game_controls.py:206 handlers/personal_actions.py:161
 #: handlers/personal_actions.py:182
 msgid "Ва-банк! 🤑"
-msgstr "All-in! 🤑"
+msgstr ""
 
 #: game_controls.py:221 game_controls.py:232 handlers/personal_actions.py:268
 msgid "Еще 🟢"
-msgstr "Hit 🟢"
+msgstr ""
 
 #: game_controls.py:222 game_controls.py:233 handlers/personal_actions.py:383
 msgid "Стоп 🛑"
-msgstr "Stand 🛑"
+msgstr ""
 
 #: game_controls.py:223 handlers/personal_actions.py:539
 msgid "Сдаюсь 😵"
-msgstr "Give up 😵"
+msgstr ""
 
 #: handlers/callbacks.py:29 handlers/callbacks.py:37
 msgid "◀️ Назад"
-msgstr "◀️ Back"
+msgstr ""
 
 #: handlers/callbacks.py:32
 msgid "Настройки 🛠 — Сменить язык 👅"
-msgstr "Settings 🛠 — Change language"
+msgstr ""
 
 #: handlers/callbacks.py:36
 msgid "⚡️ Связаться с разработчиком ⚡️"
-msgstr "⚡️ Developer contacts ⚡️"
+msgstr ""
 
 #: handlers/callbacks.py:40
 msgid "Настройки 🛠 — Тех поддержка 👨‍💻"
-msgstr "Settings 🛠 — Support 👨‍💻"
+msgstr ""
 
 #: handlers/callbacks.py:43 handlers/personal_actions.py:26
 msgid "Сменить язык 👅"
-msgstr "Change language"
+msgstr ""
 
 #: handlers/callbacks.py:44 handlers/personal_actions.py:27
 msgid "Тех поддержка 👨‍💻"
-msgstr "Support 👨‍💻"
+msgstr ""
 
 #: handlers/callbacks.py:46 handlers/personal_actions.py:30
 msgid "Настройки 🛠"
-msgstr "Settings 🛠"
+msgstr ""
 
 #: handlers/callbacks.py:50
 msgid "Да 🆗"
-msgstr "Yes 🆗"
+msgstr ""
 
 #: handlers/callbacks.py:51
 msgid "Отмена 🙅‍♂️"
-msgstr "Cancel 🙅‍♂️"
+msgstr ""
 
 #: handlers/callbacks.py:53
 msgid "Вы уверены? Это приведет к полной потере всех ваших данных!"
-msgstr "Are you sure? It will lead to full loosing all your data!"
+msgstr ""
 
 #: handlers/personal_actions.py:45
 msgid "Связаться с разработчиком: @bug_lag_feature"
-msgstr "Developer contacts: @bug_lag_feature"
+msgstr ""
 
 #: handlers/personal_actions.py:70
 msgid "Выберите язык"
-msgstr "Choose language"
+msgstr ""
 
 #: handlers/personal_actions.py:78
 msgid ""
@@ -194,52 +190,32 @@ msgid ""
 "- Туз - 11 очков (если сумма карт больше 21, может стоить 1 очко);\n"
 "Стоимость остальных карт определяется их номиналом."
 msgstr ""
-"♦️ <b>Rules of Black-Jack</b> ♦️\n"
-"\n"
-"We will provide a brief set of rules for readers who have never played "
-"Blackjack.\n"
-"\n"
-"The magic number for Blackjack is 21.\n"
-"The values of all the cards dealt to player are added and if the sum "
-"exceeds 21, the player busts and loses instantly.\n"
-"\n"
-"If a player gets an exact 21, the player wins against the dealer.\n"
-"Otherwise, in order to win, the sum of the player's cards must be more "
-"than the sum of the dealer's cards.\n"
-"\n"
-"Cards values:\n"
-"- Jack - 2 scores;\n"
-"- Queen - 3 scores;\n"
-"- King - 4 scores;\n"
-"- Ace - 11 scores (If the sum of the cards exceeds 21, can costs 1 "
-"score);\n"
-"The value of the rest of the cards is defined by their number."
 
 #: handlers/personal_actions.py:107
 msgid "♦️ Добро пожаловать в блэк-джек ♦️"
-msgstr "♦️ Welcome to Blackjack ♦️"
+msgstr ""
 
 #: handlers/personal_actions.py:147
 msgid "Выберите тип игры"
-msgstr "Choose game type"
+msgstr ""
 
 #: handlers/personal_actions.py:152 handlers/personal_actions.py:165
 #: handlers/personal_actions.py:278 handlers/personal_actions.py:396
 #: handlers/personal_actions.py:549
 msgid "Для начала начните новую игру"
-msgstr "You should start a new game"
+msgstr ""
 
 #: handlers/personal_actions.py:158
 msgid "Сделайте ставку"
-msgstr "Choose bet"
+msgstr ""
 
 #: handlers/personal_actions.py:197
 msgid "На вашем балансе недостаточно средств."
-msgstr "There are not enough funds on your balance."
+msgstr ""
 
 #: handlers/personal_actions.py:201
 msgid "Ставка в {} принята.🤑 Приятной игры!"
-msgstr "{} bet accepted.🤑 Good luck!"
+msgstr ""
 
 #: handlers/personal_actions.py:237 handlers/personal_actions.py:314
 #: handlers/personal_actions.py:356 handlers/personal_actions.py:375
@@ -247,11 +223,11 @@ msgstr "{} bet accepted.🤑 Good luck!"
 #: handlers/personal_actions.py:502 handlers/personal_actions.py:523
 #: handlers/personal_actions.py:562
 msgid "Карты дилера"
-msgstr "Dealer's cards"
+msgstr ""
 
 #: handlers/personal_actions.py:237 handlers/personal_actions.py:375
 msgid "Скрыто"
-msgstr "Hidden"
+msgstr ""
 
 #: handlers/personal_actions.py:242 handlers/personal_actions.py:326
 #: handlers/personal_actions.py:367 handlers/personal_actions.py:380
@@ -259,50 +235,43 @@ msgstr "Hidden"
 #: handlers/personal_actions.py:512 handlers/personal_actions.py:534
 #: handlers/personal_actions.py:573
 msgid "Ваши карты"
-msgstr "Your cards"
+msgstr ""
 
 #: handlers/personal_actions.py:265
 msgid "У вас Блэк-Джек! Вы победили!"
-msgstr "You've a blackjack! You win!"
+msgstr ""
 
 #: handlers/personal_actions.py:265 handlers/personal_actions.py:326
 #: handlers/personal_actions.py:456 handlers/personal_actions.py:491
 msgid "Чистый выигрыш"
-msgstr "Your winnings"
+msgstr ""
 
 #: handlers/personal_actions.py:326 handlers/personal_actions.py:456
 msgid "Вы победили!"
-msgstr "You win!"
+msgstr ""
 
 #: handlers/personal_actions.py:367
 msgid "Перебор! Вы проиграли"
-msgstr "Bust! You lost!"
+msgstr ""
 
 #: handlers/personal_actions.py:367 handlers/personal_actions.py:512
 #: handlers/personal_actions.py:573
 msgid "Проигрыш"
-msgstr "Loss"
+msgstr ""
 
 #: handlers/personal_actions.py:491
 msgid "Вы победили"
-msgstr "You win"
+msgstr ""
 
 #: handlers/personal_actions.py:512
 msgid "Вы проиграли"
-msgstr "You lose"
+msgstr ""
 
 #: handlers/personal_actions.py:534
 msgid "Ничья"
-msgstr "Tied game"
+msgstr ""
 
 #: handlers/personal_actions.py:573
 msgid "Вы сдались"
-msgstr "You gave up"
-
-#~ msgid ""
-#~ "У вас пока не статистики 😔\n"
-#~ " Сыграйте хотя бы один раз, для того чтобы она появилась"
-#~ msgstr ""
-#~ "You don't have any statistics yet😔\n"
-#~ "Play at least one game so it appears"
+msgstr ""
 

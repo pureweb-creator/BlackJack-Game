@@ -41,17 +41,16 @@ class Game_controls(DBh):
 
     def get_locale(self, lang):
         '''load language'''
-        if (lang == 'en'):
-            en = gettext.translation('blackjack', localedir='locales', languages=['en'])
-            en.install()
-            return en.gettext
-
         if (lang == 'ru'):
             gettext.bindtextdomain('blackjack', 'localization/')
             gettext.textdomain('blackjack')
             return gettext.gettext
+        else:
+            lang = gettext.translation('blackjack', localedir='locales', languages=[lang])
+            lang.install()
+            return lang.gettext
 
-    def collect_statistics(self, user_id, game_result, balance, current_win=None, is_all_in=None): # default values could be None type cuz tied game result has not win or all-in param
+    def collect_statistics(self, user_id, game_result, balance, current_win=None, is_all_in=None, is_blackjack=False): # default values could be None type cuz tied game result has not win or all-in param
         '''Collect statistics'''
         user = super().load_user(user_id)
 
@@ -81,7 +80,12 @@ class Game_controls(DBh):
             games_won += 1
             max_win = user['max_win']
 
-            super().update(table='users', set='games_won = %s', where='user_id = %s', values=(games_won, user_id ))
+            super().update(table='users', set='games_won = %s', where='user_id = %s', values=(games_won, user_id, ))
+
+            if (is_blackjack == True):
+                blackjack = user['blackjack_count'];
+                blackjack += 1
+                super().update(table='users', set='blackjack_count = %s', where="user_id = %s", values=(blackjack, user_id, ))
 
             if (current_win > max_win):
                 max_win = current_win
@@ -131,28 +135,30 @@ class Game_controls(DBh):
         
         stat = super().load_statistics(user_id)
 
-        percentage = [
-            round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-            round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-            round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-            round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-            round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-            round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0)
-        ]
+        percentage = {
+            "gamesWon": round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            "gamesLost": round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            "gamesTied": round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
+            "AllInWin": round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+            "AllInLoss": round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+            "AllInTie": round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
+            "BlackJackCount": round(stat['blackjack_count']/stat['games_won']*100 if stat['games_won'] > 0 else 0)
+        }
         
         msg = "📈 <b>"+_("Ваша статистика")+"</b>" \
         +"\n\n<b>"+_("Имя")+f": {user_name}</b>\n" \
         +"🎲 "+_("Игр сыграно")+f": <b>{stat['games_played']}</b>\n" \
-        +"✅ "+_("Игр выиграно")+f": <b>{stat['games_won']} ({percentage[0]}%)</b>\n" \
-        +"❌ "+_("Игр проиграно")+f": <b>{stat['games_lost']} ({percentage[1]}%)</b>\n" \
-        +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage[2]}%)</b>\n\n" \
+        +"✅ "+_("Игр выиграно")+f": <b>{stat['games_won']} ({percentage['gamesWon']}%)</b>\n" \
+        +"🏆 "+_("Блэк-Джек")+f": <b>{stat['blackjack_count']} ({percentage['BlackJackCount']}%)</b>\n" \
+        +"❌ "+_("Игр проиграно")+f": <b>{stat['games_lost']} ({percentage['gamesLost']}%)</b>\n" \
+        +"😐 "+_("Игр вничью")+f": <b>{stat['games_tied']} ({percentage['gamesTied']}%)</b>\n\n" \
         +"⏩ "+_("Максимальный выигрыш")+f": <b>{stat['max_win']}</b>\n" \
         +"⏪ "+_("Максимальный проигрыш")+f": <b>{stat['max_loss']}</b>\n\n" \
         +"🤑 "+_("Пошли ва-банк (раз)")+f": <b>{stat['all_in_games_count']}</b>\n" \
         +_("Из них: ")+"\n" \
-        +"✅ "+_("Выиграли")+f": <b>{stat['all_in_win']} ({percentage[3]}%)</b>\n" \
-        +"❌ "+_("Проиграли")+f": <b>{stat['all_in_loss']} ({percentage[4]}%)</b>\n" \
-        +"😐 "+_("Вничью")+f": <b>{stat['all_in_tie']} ({percentage[5]}%)</b>\n\n" \
+        +"✅ "+_("Выиграли")+f": <b>{stat['all_in_win']} ({percentage['AllInWin']}%)</b>\n" \
+        +"❌ "+_("Проиграли")+f": <b>{stat['all_in_loss']} ({percentage['AllInLoss']}%)</b>\n" \
+        +"😐 "+_("Вничью")+f": <b>{stat['all_in_tie']} ({percentage['AllInTie']}%)</b>\n\n" \
         +"⏰ "+_("Последний раз играли")+f": <b>{stat['last_played'].strftime('%m/%d/%Y, %H:%M')}</b>\n" \
         
         btn = types.InlineKeyboardButton(_('🆑 Сбросить статистику'), callback_data="confirmation")

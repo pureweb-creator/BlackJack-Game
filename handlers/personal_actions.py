@@ -252,7 +252,14 @@ async def process_handler(message: types.Message):
             total_win = current_win+user['balance']
             
             # updates a lot of data in database
-            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN, balance=total_win, current_win=current_win, is_all_in=is_all_in)
+            game_controls.collect_statistics(
+                message.from_user.id,
+                game_result=config.GAME_WIN,
+                balance=total_win,
+                current_win=current_win,
+                is_all_in=is_all_in,
+                is_blackjack = True
+            )
             
             # pring player cards and score
             await message.answer(_("У вас Блэк-Джек! Вы победили!")+" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
@@ -318,7 +325,14 @@ async def process_handler(message: types.Message):
             # print player score
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
-            game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN,  current_win=current_win, is_all_in=is_all_in, balance=total_win)
+            game_controls.collect_statistics(
+                message.from_user.id,
+                game_result=config.GAME_WIN,
+                current_win=current_win,
+                is_all_in=is_all_in,
+                balance=total_win,
+                is_blackjack=True
+            )
             
             return;
 
