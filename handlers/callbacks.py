@@ -4,6 +4,8 @@ from bot import db
 from game_controls import Game_controls
 from aiogram import types
 
+game_controls = Game_controls()
+
 @dp.callback_query_handler(lambda call: True)
 async def callback_inline(call):
 	try:
@@ -11,8 +13,7 @@ async def callback_inline(call):
 			user = db.load_user(call.from_user.id)
 
 			# get current user locale
-			locale = Game_controls()
-			_ = locale.get_locale(user['lang'])
+			_ = game_controls.get_locale(user['lang'])
 
 			if call.data == "lang_russian":
 				db.update('users', 'lang = %s', 'user_id = %s', ('ru', call.from_user.id,))
@@ -53,15 +54,12 @@ async def callback_inline(call):
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Вы уверены? Это приведет к полной потере всех ваших данных!")+"</b>", reply_markup=confirmation_markup)
 
 			if call.data == "back_to_statistics":
-				stat = Game_controls()
-				msg, markup = await stat.print_statistics(call.from_user.id, call.from_user.first_name)
+				msg, markup = await game_controls.print_statistics(call.from_user.id, call.from_user.first_name)
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg, reply_markup=markup)
 
 			if call.data == "clear_statistics":
 				db.update("users", "games_played = %s, games_won = %s, games_lost = %s, games_tied = %s, max_win = %s, max_loss = %s, all_in_games_count = %s, all_in_win = %s, all_in_loss = %s, all_in_tie = %s, blackjack_count = %s", "user_id = %s", (0,0,0,0,0,0,0,0,0,0,0, call.message.chat.id))
-
-				stat = Game_controls()
-				msg, markup = await stat.print_statistics(call.from_user.id, call.from_user.first_name)
+				msg, markup = await game_controls.print_statistics(call.from_user.id, call.from_user.first_name)
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text=msg, reply_markup=markup)				
 	except Exception as e:
 		print(repr(e))

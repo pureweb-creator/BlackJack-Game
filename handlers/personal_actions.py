@@ -8,7 +8,6 @@ from dispatcher import config
 from bot import db
 
 from datetime import datetime, timedelta
-
 from game_controls import Game_controls, Keyboard
 
 dealer_score = 0
