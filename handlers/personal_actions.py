@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 from game_controls import Game_controls, Keyboard
 
 dealer_score = 0
+game_controls = Game_controls()
 global _
 
 # settings command
@@ -19,8 +20,7 @@ global _
 async def settigns(message: types.Message):
     # get current user locale
     user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
 
     # keyboard
     btn1 = types.InlineKeyboardButton(_('Сменить язык 👅'), callback_data="change_lang")
@@ -32,24 +32,21 @@ async def settigns(message: types.Message):
 # stat command
 @dp.message_handler(commands=['stat'])
 async def statistics(message: types.Message):
-    stat = Game_controls()
-    msg, markup = await stat.print_statistics(message.from_user.id, message.from_user.first_name)
+    msg, markup = await game_controls.print_statistics(message.from_user.id, message.from_user.first_name)
     await message.answer(msg, reply_markup=markup)
     
 # get help command
 @dp.message_handler(commands=['help'])
 async def info_help(message: types.Message):
     user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
     await message.answer(_("Связаться с разработчиком: @bug_lag_feature"))
 
 # get balance command
 @dp.message_handler(commands=['balance'])
 async def get_balance(message: types.Message):
     user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
 
     await message.answer(_("💰 Баланс: ")+ str(user['balance']))
 
@@ -59,8 +56,7 @@ async def change_lang(message: types.Message):
     user = db.load_user(message.from_user.id)
 
     # get current user locale
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
     
     # keyboard
     russian_lang_btn = types.InlineKeyboardButton('Русский 🇷🇺', callback_data='lang_russian')
@@ -73,8 +69,7 @@ async def change_lang(message: types.Message):
 @dp.message_handler(commands=['rules'])
 async def rules(message: types.Message):
     user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
     await message.answer(_("""♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n
 Мы предоставим краткий свод правил для тех, кто никогда не играл в блэкджек.\n
 Магическое число для блэкджека — 21.\nЗначения всех карт, розданных игроку, складываются, и если сумма превышает 21, игрок вылетает и мгновенно проигрывает.\n
@@ -92,13 +87,11 @@ async def process_start_game(message: types.Message):
         test = db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
 
     user = db.load_user(message.from_user.id)
-    locale = Game_controls()
-    _ = locale.get_locale(user['lang'])
+    _ = game_controls.get_locale(user['lang'])
 
     # keyboard
     kbd = Keyboard(user['lang'])
     main_menu_markup = kbd.new_game()
-
 
     # Getting the current date and time
     dt = datetime.utcnow()+timedelta(hours=3)
@@ -116,11 +109,10 @@ async def process_handler(message: types.Message):
     user = db.load_user(message.from_user.id)
 
     # global declaration
-    game_controls = Game_controls()
+    kbd = Keyboard(user['lang'])
     _ = game_controls.get_locale(user['lang'])
 
     if message.text == _("Начать новую игру 🎮"):
-        
         user = db.load_user(message.from_user.id)
 
         # updating deck of cards
@@ -141,7 +133,6 @@ async def process_handler(message: types.Message):
         else: db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(True, dt, message.from_user.id,))
 
         # keyboard
-        kbd = Keyboard(user['lang'])
         game_type_markup = kbd.game_type()
         await bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEEtKFie91Ts3FZ99cztCfWqfxAqNn4FgACaQIAArrAlQUw5zOp4KLsaCQE")
         await message.answer(_("Выберите тип игры"), reply_markup=game_type_markup)
@@ -153,7 +144,6 @@ async def process_handler(message: types.Message):
             return;
 
         # keyboard
-        kbd = Keyboard(user['lang'])
         choose_bet_markup = kbd.bet(user)
         await message.answer(_("Сделайте ставку"), reply_markup=choose_bet_markup)
 
@@ -175,7 +165,6 @@ async def process_handler(message: types.Message):
         deck         = list(eval(user['deck']))
 
         # render keyboard
-        kbd = Keyboard(user['lang'])
         game_controls_markup = kbd.game_nav_1()
         
         # save in db if player chosed All-in game
@@ -226,11 +215,10 @@ async def process_handler(message: types.Message):
 
         db.update(table='users', set='player_score = %s, deck = %s, player_cards = %s, dealer_cards = %s, dealer_score = %s', where='user_id = %s', values=(player_score, str(deck), str(player_cards), str(dealer_cards), dealer_score, message.from_user.id,))
 
-        img = Game_controls()
         # render dealer hided cards
-        img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
+        game_controls.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
         # render player cards
-        img.render_cards([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
+        game_controls.render_cards([player_cards[0]['image'], player_cards[1]['image']], 2, f"{message.from_user.id}_out_player.webp")
     
         # print dealer cards and score          
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
@@ -244,7 +232,6 @@ async def process_handler(message: types.Message):
         # Player gets a blackjack (WIN)
         if (player_score == 21):
             # set a keyboard
-            kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
             
             # updating player score
@@ -291,16 +278,14 @@ async def process_handler(message: types.Message):
         for i in range(len(player_cards)):
             img_path.append(player_cards[i]['image'])
         
-        img = Game_controls()
         # render player cards
-        img.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
+        game_controls.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
         # render dealer hided cards
-        img.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
+        game_controls.render_cards([dealer_cards[0]['image'], 'static/images/back.png'], 2, f"{message.from_user.id}_out_dealer_close.webp")
         # render dealer revealed cards
-        img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
+        game_controls.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
 
         # set a keyboard
-        kbd = Keyboard(user['lang'])
         continue_game_controls_markup = kbd.game_nav_2()   
 
         # if player wons
@@ -319,7 +304,6 @@ async def process_handler(message: types.Message):
             user = db.load_user(message.from_user.id)
 
             # set a keyboard
-            kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
 
             # print player score
@@ -360,7 +344,6 @@ async def process_handler(message: types.Message):
                 user = db.load_user(message.from_user.id)
                 
                 # keyboard
-                kbd = Keyboard(user['lang'])
                 main_menu_markup = kbd.new_game()
                 
                 # print player score
@@ -400,8 +383,7 @@ async def process_handler(message: types.Message):
         for i in range(len(player_cards)):
             img_path.append(player_cards[i]['image'])
         
-        img = Game_controls()
-        img.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
+        game_controls.render_cards(img_path, len(player_cards), f"{message.from_user.id}_out_player.webp")
         
         # managing dealer moves
         while (user['dealer_score'] < 17):
@@ -423,8 +405,7 @@ async def process_handler(message: types.Message):
                 img_path_dealer.append(dealer_cards[i]['image'])
 
             # generate image with paths
-            img = Game_controls()
-            img.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
+            game_controls.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
 
             # if dealer picks too many cards
             if (user['dealer_score'] > 21):
@@ -451,7 +432,6 @@ async def process_handler(message: types.Message):
                     user = db.load_user(message.from_user.id)
 
                     # keyboard
-                    kbd = Keyboard(user['lang'])
                     main_menu_markup = kbd.new_game()
                     await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
@@ -466,8 +446,7 @@ async def process_handler(message: types.Message):
         # generate cards image
         for i in range(len(dealer_cards)):
             img_path_dealer.append(dealer_cards[i]['image'])
-        img = Game_controls()
-        img.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
+        game_controls.render_cards(img_path_dealer, len(dealer_cards), f"{message.from_user.id}_out_dealer_open.webp")
         
         # player wins
         if (user['dealer_score'] < user['player_score']):
@@ -485,7 +464,6 @@ async def process_handler(message: types.Message):
             user = db.load_user(message.from_user.id)
 
             # keyboard
-            kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
@@ -506,7 +484,6 @@ async def process_handler(message: types.Message):
             user = db.load_user(message.from_user.id)
 
             # keyboard
-            kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
 
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
@@ -527,7 +504,6 @@ async def process_handler(message: types.Message):
             user = db.load_user(message.from_user.id)
 
             # keyboard
-            kbd = Keyboard(user['lang'])
             main_menu_markup = kbd.new_game()
 
             # print player score
@@ -552,9 +528,8 @@ async def process_handler(message: types.Message):
         # update score
         total_win = user['balance']-float(user['bet'])
         
-        img = Game_controls()
         # render dealer revealed cards
-        img.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
+        game_controls.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], 2, f"{message.from_user.id}_out_dealer_open.webp")
         
         # print dealer cards and score
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
@@ -566,7 +541,6 @@ async def process_handler(message: types.Message):
         user = db.load_user(message.from_user.id)
 
         # keyboard
-        kbd = Keyboard(user['lang'])
         main_menu_markup = kbd.new_game()
 
         # print dealer score
@@ -574,8 +548,7 @@ async def process_handler(message: types.Message):
         
         # upates a lot of data in database
         game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
-
-
+        
     # view balance
     if (message.text == _("Просмотреть баланс 💰")):
         user = db.load_user(message.from_user.id)

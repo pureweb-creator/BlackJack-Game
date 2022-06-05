@@ -3,8 +3,7 @@ import psycopg2.extras
 
 class DBh:
     def __init__(self, database, user, password, host, port):
-        """Connecting to DB and saving connection cursor"""
-
+        """Connecting to DB and saving connection cursor"""        
         self.database = database
         self.user = user
         self.password = password

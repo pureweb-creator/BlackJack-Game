@@ -45,7 +45,7 @@ async def callback_inline(call):
 				settings_markup = types.InlineKeyboardMarkup().add(btn1, btn2)
 				await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.message_id, text="<b>"+_("Настройки 🛠")+"</b>", reply_markup=settings_markup)
 
-			# confirmation message for clear statistics action
+			# confirmation message for "clear statistics" action
 			if call.data == "confirmation":
 				btn1 = types.InlineKeyboardButton(_("Да 🆗"), callback_data="clear_statistics")
 				btn2 = types.InlineKeyboardButton(_("Отмена 🙅‍♂️"), callback_data="back_to_statistics")
