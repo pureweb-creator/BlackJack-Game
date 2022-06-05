@@ -139,10 +139,10 @@ class Game_controls(DBh):
             "gamesWon": round(stat['games_won']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
             "gamesLost": round(stat['games_lost']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
             "gamesTied": round(stat['games_tied']/stat['games_played']*100 if stat['games_played'] > 0 else 0, 2),
-            "AllInWin": round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-            "AllInLoss": round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-            "AllInTie": round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0),
-            "BlackJackCount": round(stat['blackjack_count']/stat['games_won']*100 if stat['games_won'] > 0 else 0)
+            "AllInWin": round(stat['all_in_win']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0, 2),
+            "AllInLoss": round(stat['all_in_loss']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0, 2),
+            "AllInTie": round(stat['all_in_tie']/stat['all_in_games_count']*100 if stat['all_in_games_count'] > 0 else 0, 2),
+            "BlackJackCount": round(stat['blackjack_count']/stat['games_won']*100 if stat['games_won'] > 0 else 0, 2)
         }
         
         msg = "📈 <b>"+_("Ваша статистика")+"</b>" \
