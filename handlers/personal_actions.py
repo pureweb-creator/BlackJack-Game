@@ -9,6 +9,7 @@ from bot import db
 
 from datetime import datetime, timedelta
 from game_controls import Game_controls, Keyboard
+from config import STICKERS
 
 dealer_score = 0
 game_controls = Game_controls()
@@ -128,12 +129,14 @@ async def process_handler(message: types.Message):
         if user['balance'] < 1:
             user['balance'] = 100
             db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(100, True, dt, message.from_user.id,))
-
         else: db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(True, dt, message.from_user.id,))
 
         # keyboard
         game_type_markup = kbd.game_type()
-        await bot.send_sticker(message.chat.id, "CAACAgIAAxkBAAEEtKFie91Ts3FZ99cztCfWqfxAqNn4FgACaQIAArrAlQUw5zOp4KLsaCQE")
+
+        # choose random sticker
+        sticker_hash = random.choice(STICKERS)
+        await bot.send_sticker(message.chat.id, sticker_hash)
         await message.answer(_("Выберите тип игры"), reply_markup=game_type_markup)
 
     if message.text == _("Играть с компьютером 🧠"):
@@ -330,8 +333,9 @@ async def process_handler(message: types.Message):
 
             # if player loses
             if (user['player_score'] > 21):
+                
                 # update player score
-                total_win = user['balance']-float(user['bet']) 
+                total_win = user['balance']-float(user['bet'])
 
                 # print dealer cards and score
                 await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_open.webp", 'rb').read())
