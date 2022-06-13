@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2022-06-01 13:58+0300\n"
+"POT-Creation-Date: 2022-06-13 18:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -86,15 +86,15 @@ msgstr "🆑 Drop statistics"
 # Copyright (C) 2022 BugLagFeature
 # This file is distributed under the same license as the Blackjack project.
 # FIRST AUTHOR <roman.semenikhin99@gmail.com>, 2022.
-#: game_controls.py:187 handlers/personal_actions.py:122
+#: game_controls.py:187 handlers/personal_actions.py:115
 msgid "Начать новую игру 🎮"
 msgstr "Start new game 🎮"
 
-#: game_controls.py:188 handlers/personal_actions.py:580
+#: game_controls.py:188 handlers/personal_actions.py:566
 msgid "Просмотреть баланс 💰"
 msgstr "My balance 💰"
 
-#: game_controls.py:193 handlers/personal_actions.py:149
+#: game_controls.py:193 handlers/personal_actions.py:142
 msgid "Играть с компьютером 🧠"
 msgstr "With bot 🧠"
 
@@ -102,77 +102,77 @@ msgstr "With bot 🧠"
 msgid "Играть с другом 👨‍🦰 (в разработке </>)"
 msgstr "With a friend 👨‍🦰 (developing </>)"
 
-#: game_controls.py:200 handlers/personal_actions.py:54
-#: handlers/personal_actions.py:582
+#: game_controls.py:200 handlers/personal_actions.py:51
+#: handlers/personal_actions.py:568
 msgid "💰 Баланс: "
 msgstr "💰 Balance: "
 
-#: game_controls.py:206 handlers/personal_actions.py:161
-#: handlers/personal_actions.py:182
+#: game_controls.py:206 handlers/personal_actions.py:153
+#: handlers/personal_actions.py:173
 msgid "Ва-банк! 🤑"
 msgstr "All-in! 🤑"
 
-#: game_controls.py:221 game_controls.py:232 handlers/personal_actions.py:268
+#: game_controls.py:221 game_controls.py:232 handlers/personal_actions.py:257
 msgid "Еще 🟢"
 msgstr "Hit 🟢"
 
-#: game_controls.py:222 game_controls.py:233 handlers/personal_actions.py:383
+#: game_controls.py:222 game_controls.py:233 handlers/personal_actions.py:372
 msgid "Стоп 🛑"
 msgstr "Stand 🛑"
 
-#: game_controls.py:223 handlers/personal_actions.py:539
+#: game_controls.py:223 handlers/personal_actions.py:524
 msgid "Сдаюсь 😵"
 msgstr "Give up 😵"
 
-#: handlers/callbacks.py:29 handlers/callbacks.py:37
+#: handlers/callbacks.py:30 handlers/callbacks.py:38
 msgid "◀️ Назад"
 msgstr "◀️ Back"
 
-#: handlers/callbacks.py:32
+#: handlers/callbacks.py:33
 msgid "Настройки 🛠 — Сменить язык 👅"
 msgstr "Settings 🛠 — Change language"
 
-#: handlers/callbacks.py:36
+#: handlers/callbacks.py:37
 msgid "⚡️ Связаться с разработчиком ⚡️"
 msgstr "⚡️ Developer contacts ⚡️"
 
-#: handlers/callbacks.py:40
+#: handlers/callbacks.py:41
 msgid "Настройки 🛠 — Тех поддержка 👨‍💻"
 msgstr "Settings 🛠 — Support 👨‍💻"
 
-#: handlers/callbacks.py:43 handlers/personal_actions.py:26
+#: handlers/callbacks.py:44 handlers/personal_actions.py:26
 msgid "Сменить язык 👅"
 msgstr "Change language"
 
-#: handlers/callbacks.py:44 handlers/personal_actions.py:27
+#: handlers/callbacks.py:45 handlers/personal_actions.py:27
 msgid "Тех поддержка 👨‍💻"
 msgstr "Support 👨‍💻"
 
-#: handlers/callbacks.py:46 handlers/personal_actions.py:30
+#: handlers/callbacks.py:47 handlers/personal_actions.py:30
 msgid "Настройки 🛠"
 msgstr "Settings 🛠"
 
-#: handlers/callbacks.py:50
+#: handlers/callbacks.py:51
 msgid "Да 🆗"
 msgstr "Yes 🆗"
 
-#: handlers/callbacks.py:51
+#: handlers/callbacks.py:52
 msgid "Отмена 🙅‍♂️"
 msgstr "Cancel 🙅‍♂️"
 
-#: handlers/callbacks.py:53
+#: handlers/callbacks.py:54
 msgid "Вы уверены? Это приведет к полной потере всех ваших данных!"
 msgstr "Are you sure? It will lead to full loosing all your data!"
 
-#: handlers/personal_actions.py:45
+#: handlers/personal_actions.py:43
 msgid "Связаться с разработчиком: @bug_lag_feature"
 msgstr "Developer contacts: @bug_lag_feature"
 
-#: handlers/personal_actions.py:70
+#: handlers/personal_actions.py:66
 msgid "Выберите язык"
 msgstr "Choose language"
 
-#: handlers/personal_actions.py:78
+#: handlers/personal_actions.py:73
 msgid ""
 "♦️ <b>Правила игры в Блэк-Джек (двадцать одно)</b> ♦️\n"
 "\n"
@@ -215,87 +215,96 @@ msgstr ""
 "score);\n"
 "The value of the rest of the cards is defined by their number."
 
-#: handlers/personal_actions.py:107
+#: handlers/personal_actions.py:100
 msgid "♦️ Добро пожаловать в блэк-джек ♦️"
 msgstr "♦️ Welcome to Blackjack ♦️"
 
-#: handlers/personal_actions.py:147
+#: handlers/personal_actions.py:140
 msgid "Выберите тип игры"
 msgstr "Choose game type"
 
-#: handlers/personal_actions.py:152 handlers/personal_actions.py:165
-#: handlers/personal_actions.py:278 handlers/personal_actions.py:396
-#: handlers/personal_actions.py:549
+#: handlers/personal_actions.py:145 handlers/personal_actions.py:157
+#: handlers/personal_actions.py:267 handlers/personal_actions.py:385
+#: handlers/personal_actions.py:534
 msgid "Для начала начните новую игру"
 msgstr "You should start a new game"
 
-#: handlers/personal_actions.py:158
+#: handlers/personal_actions.py:150
 msgid "Сделайте ставку"
 msgstr "Choose bet"
 
-#: handlers/personal_actions.py:197
+#: handlers/personal_actions.py:188
 msgid "На вашем балансе недостаточно средств."
 msgstr "There are not enough funds on your balance."
 
-#: handlers/personal_actions.py:201
+#: handlers/personal_actions.py:192
 msgid "Ставка в {} принята.🤑 Приятной игры!"
 msgstr "{} bet accepted.🤑 Good luck!"
 
-#: handlers/personal_actions.py:237 handlers/personal_actions.py:314
-#: handlers/personal_actions.py:356 handlers/personal_actions.py:375
-#: handlers/personal_actions.py:447 handlers/personal_actions.py:481
-#: handlers/personal_actions.py:502 handlers/personal_actions.py:523
-#: handlers/personal_actions.py:562
+#: handlers/personal_actions.py:227 handlers/personal_actions.py:301
+#: handlers/personal_actions.py:343 handlers/personal_actions.py:364
+#: handlers/personal_actions.py:434 handlers/personal_actions.py:466
+#: handlers/personal_actions.py:486 handlers/personal_actions.py:509
+#: handlers/personal_actions.py:546
 msgid "Карты дилера"
 msgstr "Dealer's cards"
 
-#: handlers/personal_actions.py:237 handlers/personal_actions.py:375
+#: handlers/personal_actions.py:227 handlers/personal_actions.py:364
 msgid "Скрыто"
 msgstr "Hidden"
 
-#: handlers/personal_actions.py:242 handlers/personal_actions.py:326
-#: handlers/personal_actions.py:367 handlers/personal_actions.py:380
-#: handlers/personal_actions.py:456 handlers/personal_actions.py:491
-#: handlers/personal_actions.py:512 handlers/personal_actions.py:534
-#: handlers/personal_actions.py:573
+#: handlers/personal_actions.py:232 handlers/personal_actions.py:312
+#: handlers/personal_actions.py:353 handlers/personal_actions.py:369
+#: handlers/personal_actions.py:442 handlers/personal_actions.py:475
+#: handlers/personal_actions.py:495 handlers/personal_actions.py:519
+#: handlers/personal_actions.py:556
 msgid "Ваши карты"
 msgstr "Your cards"
 
-#: handlers/personal_actions.py:265
+#: handlers/personal_actions.py:254
 msgid "У вас Блэк-Джек! Вы победили!"
 msgstr "You've a blackjack! You win!"
 
-#: handlers/personal_actions.py:265 handlers/personal_actions.py:326
-#: handlers/personal_actions.py:456 handlers/personal_actions.py:491
+#: handlers/personal_actions.py:254 handlers/personal_actions.py:312
+#: handlers/personal_actions.py:442 handlers/personal_actions.py:475
 msgid "Чистый выигрыш"
 msgstr "Your winnings"
 
-#: handlers/personal_actions.py:326 handlers/personal_actions.py:456
+#: handlers/personal_actions.py:312 handlers/personal_actions.py:442
 msgid "Вы победили!"
 msgstr "You win!"
 
-#: handlers/personal_actions.py:367
+#: handlers/personal_actions.py:353
 msgid "Перебор! Вы проиграли"
 msgstr "Bust! You lost!"
 
-#: handlers/personal_actions.py:367 handlers/personal_actions.py:512
-#: handlers/personal_actions.py:573
+#: handlers/personal_actions.py:353 handlers/personal_actions.py:495
+#: handlers/personal_actions.py:556
 msgid "Проигрыш"
 msgstr "Loss"
 
-#: handlers/personal_actions.py:491
+#: handlers/personal_actions.py:358 handlers/personal_actions.py:500
+#: handlers/personal_actions.py:563
+msgid ""
+"К сожалению вы проиграли все средства\n"
+"\n"
+"<b>Но не время отчаиваться!</b> 😉\n"
+"Как только вы начнете новую игру, на вашем счету уже будут 100 монет! 🪙"
+msgstr "Unfortunaly you lost all of your funds\n\n<b>But it's not the time to give up!</b> 😉\nAs soon as you start a new game, your account will already have 100 coins! 🪙"
+
+#: handlers/personal_actions.py:475
 msgid "Вы победили"
 msgstr "You win"
 
-#: handlers/personal_actions.py:512
+#: handlers/personal_actions.py:495
 msgid "Вы проиграли"
 msgstr "You lose"
 
-#: handlers/personal_actions.py:534
+#: handlers/personal_actions.py:519
 msgid "Ничья"
 msgstr "Tied game"
 
-#: handlers/personal_actions.py:573
+#: handlers/personal_actions.py:556
 msgid "Вы сдались"
 msgstr "You gave up"
 

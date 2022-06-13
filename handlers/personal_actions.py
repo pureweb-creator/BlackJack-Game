@@ -353,6 +353,9 @@ async def process_handler(message: types.Message):
                 await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Перебор! Вы проиграли")+" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
                 game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
+                
+                if total_win==0:
+                    await message.answer("😔 "+_("К сожалению вы проиграли все средства\n\n<b>Но не время отчаиваться!</b> 😉\nКак только вы начнете новую игру, на вашем счету уже будут 100 монет! 🪙"))
 
                 return;
 
@@ -492,6 +495,9 @@ async def process_handler(message: types.Message):
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
             game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
+
+            if total_win==0:
+                await message.answer("😔 "+_("К сожалению вы проиграли все средства\n\n<b>Но не время отчаиваться!</b> 😉\nКак только вы начнете новую игру, на вашем счету уже будут 100 монет! 🪙"))
     
         # TIE game
         if (user['dealer_score'] == user['player_score']):
@@ -551,6 +557,10 @@ async def process_handler(message: types.Message):
         
         # upates a lot of data in database
         game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
+
+
+        if total_win==0:
+            await message.answer("😔 "+_("К сожалению вы проиграли все средства\n\n<b>Но не время отчаиваться!</b> 😉\nКак только вы начнете новую игру, на вашем счету уже будут 100 монет! 🪙"))
         
     # view balance
     if (message.text == _("Просмотреть баланс 💰")):
