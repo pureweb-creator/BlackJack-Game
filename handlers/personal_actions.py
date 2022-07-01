@@ -40,7 +40,7 @@ async def statistics(message: types.Message):
 async def info_help(message: types.Message):
     user = db.load_user(message.from_user.id)
     _ = game_controls.get_locale(user['lang'])
-    await message.answer(_("Связаться с разработчиком: @bug_lag_feature"))
+    await message.answer(_("Связаться с разработчиком: @i_suss"))
 
 # get balance command
 @dp.message_handler(commands=['balance'])
@@ -224,12 +224,12 @@ async def process_handler(message: types.Message):
     
         # print dealer cards and score          
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_dealer_close.webp", 'rb').read())
-        await bot.send_message(message.chat.id, "⬆️ 👽 <b>"+_("Карты дилера")+": </b>"+_("Скрыто"))
+        await message.answer("⬆️ 👽 <b>"+_("Карты дилера")+": </b>"+_("Скрыто"))
 
         # print player cards and score
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
         user = db.load_user(message.from_user.id)
-        await bot.send_message(message.chat.id, "⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}", reply_markup=game_controls_markup)
+        await message.answer("⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}", reply_markup=game_controls_markup)
 
         # Player gets a blackjack (WIN)
         if (player_score == 21):
@@ -378,7 +378,6 @@ async def process_handler(message: types.Message):
         is_all_in    = user['is_all_in']
         img_path_dealer = []
         img_path        = []
-
 
         # basic check
         if (user['is_game'] == False):
@@ -557,7 +556,6 @@ async def process_handler(message: types.Message):
         
         # upates a lot of data in database
         game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
-
 
         if total_win==0:
             await message.answer("😔 "+_("К сожалению вы проиграли все средства\n\n<b>Но не время отчаиваться!</b> 😉\nКак только вы начнете новую игру, на вашем счету уже будут 100 монет! 🪙"))

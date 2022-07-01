@@ -34,7 +34,7 @@ async def callback_inline(call):
 			
 			if call.data == "contact_support":
 				# keyboard
-				btn1 = types.InlineKeyboardButton(text=_("⚡️ Связаться с разработчиком ⚡️"), url="https://t.me/bug_lag_feature")
+				btn1 = types.InlineKeyboardButton(text=_("⚡️ Связаться с разработчиком ⚡️"), url="https://t.me/i_suss")
 				btn2 = types.InlineKeyboardButton(_("◀️ Назад"), callback_data='back_to_main')
 				markup = types.InlineKeyboardMarkup(row_width=1).add(btn1, btn2)
 
