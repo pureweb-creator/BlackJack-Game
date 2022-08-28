@@ -83,7 +83,7 @@ async def process_start_game(message: types.Message):
     '''bot start'''
     user = db.load_user(message.from_user.id)
     if (user==False):
-        # register user if not exists
+        # register user if does not exist
         test = db.add_user(int(message.from_user.id), message.from_user.first_name, message.from_user.last_name)
 
     user = db.load_user(message.from_user.id)
