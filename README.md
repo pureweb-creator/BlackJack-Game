@@ -58,5 +58,6 @@ in your console, it is regarded to success, bot works correctly.
 - [x] English localization
 - [x] Some statistics for player
 - [ ] p2p game
+- [ ] dynamic bet
 
 >*Check issues for more information*
