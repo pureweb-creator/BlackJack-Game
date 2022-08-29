@@ -1,1 +1,2 @@
-from . import personal_actions, callbacks
+import handlers.personal_actions
+import handlers.callbacks

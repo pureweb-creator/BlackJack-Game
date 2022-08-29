@@ -35,10 +35,10 @@ class DBh:
                 return stat[0]
             return False
 
-    def add_user(self, user_id, user_name, user_lastname):
+    def add_user(self, user_id, user_name, user_lastname, deck):
         """register user"""
         with self.connection:
-            return self.cursor.execute("INSERT INTO users (user_id, user_name, user_lastname) VALUES (%s,%s,%s)", (user_id, user_name, user_lastname,))
+            return self.cursor.execute("INSERT INTO users (user_id, user_name, user_lastname, deck) VALUES (%s,%s,%s,%s)", (user_id, user_name, user_lastname,deck,))
 
     def update(self, table, set, where, values):
         """update data"""

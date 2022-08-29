@@ -1,10 +1,8 @@
 from dispatcher import dp
 from dispatcher import bot
-from bot import db
-from game_controls import Game_controls
+from dispatcher import db
+from dispatcher import game_controls
 from aiogram import types
-
-game_controls = Game_controls()
 
 @dp.callback_query_handler(lambda call: True)
 async def callback_inline(call):

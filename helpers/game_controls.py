@@ -7,13 +7,14 @@ from dispatcher import config
 from datetime import datetime, timedelta
 
 class Game_controls(DBh):
-    '''Useful functions'''
+    '''Helper functions'''
     def __init__(self):
         super().__init__(database=config.DATABASE, user=config.USER, password=config.PASSWORD, host=config.HOST, port=config.PG_PORT)
         
-    def render_cards(self, img_path, img_count, img_name):
+    def render_cards(self, img_path, img_name):
         '''Rendering an image with gaming table and cards'''
         img_list = []
+        img_count = len(img_path)
 
         # create image list
         for i in range(img_count):
@@ -50,7 +51,7 @@ class Game_controls(DBh):
             lang.install()
             return lang.gettext
 
-    def collect_statistics(self, user_id, game_result, balance, current_win=None, is_all_in=None, is_blackjack=False): # default values could be None type cuz tied game result has not win or all-in param
+    def collect_statistics(self, user_id, game_result, balance, current_win=None, is_all_in=None, is_blackjack=False): # default values could be None type cuz tied game result has no whether win or all-in param
         '''Collect statistics'''
         user = super().load_user(user_id)
 
@@ -165,70 +166,3 @@ class Game_controls(DBh):
         markup = types.InlineKeyboardMarkup().add(btn)
 
         return msg, markup
-
-class Keyboard:
-    '''Set of keyboards'''
-    def __init__(self, lang):
-        '''get current user language'''
-        self.lang = lang
-
-        if (self.lang == 'en'):
-            en = gettext.translation('blackjack', localedir='locales', languages=['en'])
-            en.install()
-            self._ = en.gettext
-
-        if (self.lang == 'ru'):
-            gettext.bindtextdomain('blackjack', 'localization/')
-            gettext.textdomain('blackjack')
-            self._ = gettext.gettext
-
-    def new_game(self):
-        '''keyboard buttons for new game command'''
-        main_menu_new_game_btn = types.KeyboardButton(text=self._("Начать новую игру 🎮"))
-        main_menu_balance_btn = types.KeyboardButton(text=self._("Просмотреть баланс 💰"))
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(main_menu_new_game_btn, main_menu_balance_btn)
-
-    def game_type(self):
-        '''keyboard buttons for game type command'''
-        game_type_markup_computer = types.KeyboardButton(text=self._("Играть с компьютером 🧠"))
-        game_type_markup_online = types.KeyboardButton(text=self._("Играть с другом 👨‍🦰 (в разработке </>)"))
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
-
-    def bet(self, user):
-        '''keyboard buttons for "choose bet" command'''
-        
-        balance_btn = types.KeyboardButton(text=self._("💰 Баланс: ")+ str(user['balance']))
-        bet_1_btn   = types.KeyboardButton("1 🪙")
-        bet_10_btn  = types.KeyboardButton("10 🪙")
-        bet_25_btn  = types.KeyboardButton("25 🪙")
-        bet_50_btn  = types.KeyboardButton("50 🪙")
-        bet_100_btn = types.KeyboardButton("100 🪙")
-        bet_all_in_btn = types.KeyboardButton(text=self._("Ва-банк! 🤑")+f" ({user['balance']})")
-
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            bet_1_btn,
-            bet_10_btn,
-            bet_25_btn,
-            bet_50_btn,
-            bet_100_btn,
-            bet_all_in_btn,
-            balance_btn
-        )
-
-    def game_nav_1(self):
-        '''keyboard buttons navigation menu during game'''
-
-        more_btn = types.KeyboardButton(text=self._("Еще 🟢"))
-        stop_btn = types.KeyboardButton(text=self._("Стоп 🛑"))
-        give_up_btn = types.KeyboardButton(text=self._("Сдаюсь 😵"))
-
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(
-            more_btn, stop_btn, give_up_btn
-        )
-
-    def game_nav_2(self):
-        '''keyboard buttons navigation menu during game'''
-
-        more_btn = types.KeyboardButton(text=self._("Еще 🟢"))
-        stop_btn = types.KeyboardButton(text=self._("Стоп 🛑"))
-        return types.ReplyKeyboardMarkup(resize_keyboard=True).add(more_btn, stop_btn)   
