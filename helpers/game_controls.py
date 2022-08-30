@@ -123,6 +123,14 @@ class Game_controls(DBh):
                 all_in_tie += 1
                 super().update(table="users",set="all_in_tie = %s", where="user_id = %s", values=(all_in_tie, user_id, ))
 
+        if (games_played == 500):
+            user['balance'] += 1000000
+            super().update(
+                table='users',
+                set='balance = %s',
+                where='user_id = %s',
+                values=(user['balance'], user_id))
+
     def get_statistics(self, user_id):
         '''get statistics'''
         return super().load_statistics(user_id)
