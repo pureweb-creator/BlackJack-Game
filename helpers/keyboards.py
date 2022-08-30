@@ -1,21 +1,13 @@
 from aiogram import types
+from helpers.game_controls import Game_controls
 import gettext
 
 class Keyboard:
     '''Set of keyboards'''
     def __init__(self, lang):
         '''get current user language'''
-        self.lang = lang
-
-        if (self.lang == 'en'):
-            en = gettext.translation('blackjack', localedir='locales', languages=['en'])
-            en.install()
-            self._ = en.gettext
-
-        if (self.lang == 'ru'):
-            gettext.bindtextdomain('blackjack', 'localization/')
-            gettext.textdomain('blackjack')
-            self._ = gettext.gettext
+        game_controls = Game_controls()
+        self._ = game_controls.get_locale(lang)
 
     def new_game(self):
         '''keyboard buttons for new game command'''
