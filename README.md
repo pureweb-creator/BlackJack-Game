@@ -57,7 +57,8 @@ in your console, it is regarded to success, bot works correctly.
 **Todo:**
 - [x] English localization
 - [x] Some statistics for player
-- [ ] p2p game
 - [x] dynamic bet
+- [ ] referal system
+- [ ] p2p game
 
 >*Check issues for more information*
