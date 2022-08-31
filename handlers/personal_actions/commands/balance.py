@@ -8,7 +8,8 @@ game_controls = Game_controls()
 # get balance command
 @dp.message_handler(commands=['balance'])
 async def get_balance(message: types.Message):
-    user = db.load_user(message.from_user.id)
-    _ = game_controls.get_locale(user['lang'])
+    lang = db.get('lang', message.from_user.id)['lang']
+    balance = db.get('balance', message.from_user.id)['balance']
+    _ = game_controls.get_locale(lang)
 
-    await message.answer(_("💰 Баланс: ")+ str(user['balance']))
+    await message.answer(_("💰 Баланс: ")+ str(balance))

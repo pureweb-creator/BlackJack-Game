@@ -1,0 +1,2 @@
+import handlers.personal_actions.content_types.single_game
+import handlers.personal_actions.content_types.p2p_game

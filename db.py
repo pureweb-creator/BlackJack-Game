@@ -45,6 +45,17 @@ class DBh:
         with self.connection:
             return self.cursor.execute(f"UPDATE {table} SET {set} WHERE {where}", values)
 
+    def get(self, what, user_id):
+        """select specific data"""
+        with self.connection:
+            data = self.cursor.execute(f"SELECT {what} FROM users WHERE user_id = %s", (user_id,))
+            data = self.cursor.fetchall()
+
+            if data:
+                data = [{k: item[k] for k in item.keys()} for item in data]
+                return data[0]
+            return False
+
     def close(self):
         """Close connection with DB"""
         self.connection.close()

@@ -21,10 +21,10 @@ class Keyboard:
         game_type_markup_online = types.KeyboardButton(text=self._("Играть с другом 👨‍🦰 (в разработке </>)"))
         return types.ReplyKeyboardMarkup(resize_keyboard=True).add(game_type_markup_computer, game_type_markup_online)
 
-    def bet(self, user):
+    def bet(self, balance):
         '''keyboard buttons for "choose bet" command'''
 
-        user_balance = int(user['balance'])
+        user_balance = int(balance)
         balance_btn = types.KeyboardButton(text=self._("💰 Баланс: ")+ str(user_balance))
         
         bet_1  =  int(round(user_balance/100*1, -1)) if user_balance > 100 and int(round(user_balance/100*1, -1)) > 0 else 1

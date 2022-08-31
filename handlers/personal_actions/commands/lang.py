@@ -6,10 +6,10 @@ from dispatcher import db
 # change lang command
 @dp.message_handler(commands=['lang'])
 async def change_lang(message: types.Message):
-    user = db.load_user(message.from_user.id)
+    lang = db.get('lang', message.from_user.id)['lang']
 
     # get current user locale
-    _ = game_controls.get_locale(user['lang'])
+    _ = game_controls.get_locale(lang)
     
     # keyboard
     russian_lang_btn = types.InlineKeyboardButton('Русский 🇷🇺', callback_data='lang_russian')

@@ -1,2 +1,3 @@
-import handlers.personal_actions
-import handlers.callbacks
+import handlers.callbacks.callbacks
+import handlers.personal_actions.commands
+import handlers.personal_actions.content_types

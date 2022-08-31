@@ -7,8 +7,8 @@ from dispatcher import db
 @dp.message_handler(commands=['settings'])
 async def settigns(message: types.Message):
     # get current user locale
-    user = db.load_user(message.from_user.id)
-    _ = game_controls.get_locale(user['lang'])
+    lang = db.get('lang', message.from_user.id)['lang']
+    _ = game_controls.get_locale(lang)
 
     # keyboard
     btn1 = types.InlineKeyboardButton(_('Сменить язык 👅'), callback_data="change_lang")

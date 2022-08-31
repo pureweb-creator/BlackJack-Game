@@ -18,14 +18,12 @@ global _
 async def process_handler(message: types.Message):
     '''button handlers'''
 
-    user = db.load_user(message.from_user.id)
+    lang = db.get('lang',message.from_user.id)['lang']
     is_all_in  = False
-    kbd = Keyboard(user['lang'])
-    _ = game_controls.get_locale(user['lang'])
+    kbd = Keyboard(lang)
+    _ = game_controls.get_locale(lang)
 
     if message.text == _("Начать новую игру 🎮"):
-        user = db.load_user(message.from_user.id)
-
         # updating deck of cards
         with open('static/deck_of_cards.json','r', encoding="utf-8") as input_f:
             deck = json.load(input_f)
@@ -37,8 +35,8 @@ async def process_handler(message: types.Message):
         dt = datetime.utcnow()+timedelta(hours=3)
 
         # update player score is he lost everything
-        if user['balance'] < 1:
-            user['balance'] = 100
+        balance = db.get('balance', message.from_user.id)['balance']
+        if balance < 1:
             db.update(table='users', set='balance = %s, is_game = %s, last_played = %s', where='user_id = %s', values=(100, True, dt, message.from_user.id,))
         else: db.update(table='users', set='is_game = %s, last_played = %s', where='user_id = %s', values=(True, dt, message.from_user.id,))
 
@@ -51,13 +49,15 @@ async def process_handler(message: types.Message):
         await message.answer(_("Выберите тип игры"), reply_markup=game_type_markup)
 
     if message.text == _("Играть с компьютером 🧠"):
-        user = db.load_user(message.from_user.id)
-        if (user['is_game'] == False):
+        balance = db.get('balance', message.from_user.id)['balance']
+        is_game = db.get('is_game', message.from_user.id)['is_game']
+
+        if (is_game == False):
             await message.answer(_("Для начала начните новую игру"))
             return
 
         # keyboard
-        choose_bet_markup = kbd.bet(user)
+        choose_bet_markup = kbd.bet(balance)
         await message.answer(_("Сделайте ставку"), reply_markup=choose_bet_markup)
 
     # When player chosed bet, we can start a new game
@@ -370,7 +370,6 @@ async def process_handler(message: types.Message):
 
             # keyboard
             main_menu_markup = kbd.new_game()
-
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили")+f"! 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
             game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_WIN,current_win=current_win, is_all_in=is_all_in, balance=total_win)
@@ -390,7 +389,6 @@ async def process_handler(message: types.Message):
 
             # keyboard
             main_menu_markup = kbd.new_game()
-
             await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы проиграли")+f" ❌\n"+_("Проигрыш")+f": -{float(user['bet'])}", reply_markup=main_menu_markup)
 
             game_controls.collect_statistics(message.from_user.id, game_result=config.GAME_LOST, is_all_in=is_all_in, balance=total_win)
@@ -462,5 +460,5 @@ async def process_handler(message: types.Message):
         
     # view balance
     if (message.text == _("Просмотреть баланс 💰")):
-        user = db.load_user(message.from_user.id)
-        await message.answer(_("💰 Баланс: ")+ str(user['balance']))
+        balance = db.get('balance', message.from_user.id)['balance']
+        await message.answer(_("💰 Баланс: ")+ str(balance))
