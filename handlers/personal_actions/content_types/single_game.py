@@ -159,7 +159,7 @@ async def process_handler(message: types.Message):
                 is_blackjack = True
             )
             
-            # pring player cards and score
+            # print player cards and score
             await message.answer(_("У вас Блэк-Джек! Вы победили!")+" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
     # if player decides to go on
@@ -196,10 +196,7 @@ async def process_handler(message: types.Message):
         # render dealer revealed cards
         game_controls.render_cards([dealer_cards[0]['image'], dealer_cards[1]['image']], f"{message.from_user.id}_out_dealer_open.webp")
 
-        # set a keyboard
-        continue_game_controls_markup = kbd.game_nav_2()   
-
-        # if player wons
+        # if player wins
         if (user['player_score'] == 21):
             current_win = float(user['bet'])*float(1.5)
             total_win = current_win+user['balance'] # update win
@@ -218,7 +215,7 @@ async def process_handler(message: types.Message):
             main_menu_markup = kbd.new_game()
 
             # print player score
-            await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
+            await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}\n"+_("У вас Блэк-Джек! Вы победили!")+f" 🥃\n<b>"+_("Чистый выигрыш")+f"</b>: {current_win} 💴", reply_markup=main_menu_markup)
 
             game_controls.collect_statistics(
                 message.from_user.id,
@@ -275,6 +272,8 @@ async def process_handler(message: types.Message):
         # print player cards and score
         await bot.send_sticker(message.chat.id, sticker=open(f"static/images/{message.from_user.id}_out_player.webp", 'rb').read())
         user = db.load_user(message.from_user.id)
+        
+        continue_game_controls_markup = kbd.game_nav_2()   
         await message.answer(f"⬆️ 👨‍💼 <b>"+_("Ваши карты")+f": </b> {user['player_score']}", reply_markup=continue_game_controls_markup)
 
     # if player decides to stand
@@ -292,11 +291,6 @@ async def process_handler(message: types.Message):
         if (user['is_game'] == False):
             await message.answer(_("Для начала начните новую игру"))
             return
-
-        # generate image for player
-        for i in range(len(player_cards)):
-            img_path.append(player_cards[i]['image'])
-        game_controls.render_cards(img_path, f"{message.from_user.id}_out_player.webp")
         
         # managing dealer moves
         while (user['dealer_score'] < 17):
