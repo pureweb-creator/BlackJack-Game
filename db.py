@@ -1,5 +1,6 @@
 import psycopg2
 import psycopg2.extras
+import json
 
 class DBh:
     def __init__(self, database, user, password, host, port):
@@ -38,7 +39,7 @@ class DBh:
     def add_user(self, user_id, user_name, user_lastname, deck):
         """register user"""
         with self.connection:
-            return self.cursor.execute("INSERT INTO users (user_id, user_name, user_lastname, deck) VALUES (%s,%s,%s,%s)", (user_id, user_name, user_lastname,deck,))
+            return self.cursor.execute("INSERT INTO users (user_id, user_name, user_lastname, deck) VALUES (%s,%s,%s,%s)", (user_id, user_name, user_lastname,json.dumps(deck),))
 
     def update(self, table, set, where, values):
         """update data"""

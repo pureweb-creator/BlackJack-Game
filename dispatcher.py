@@ -21,7 +21,7 @@ loop = asyncio.get_event_loop()
 
 # init
 bot = Bot(token=config.API_TOKEN, parse_mode="HTML")
-dp = Dispatcher(bot,loop=loop)
+dp = Dispatcher(bot, loop=loop)
 
 # database config
 db = DBh(
