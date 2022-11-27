@@ -163,3 +163,4 @@ cython_debug/
 static/images/*.webp
 *.webp
 db.db
+backup/

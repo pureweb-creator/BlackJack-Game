@@ -18,7 +18,7 @@ global _
 async def process_handler(message: types.Message):
     '''button handlers'''
 
-    lang = db.get('lang',message.from_user.id)['lang']
+    lang = db.get('lang', message.from_user.id)['lang']
     is_all_in  = False
     kbd = Keyboard(lang)
     _ = game_controls.get_locale(lang)
