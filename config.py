@@ -8,9 +8,10 @@ DATABASE    = os.getenv("DATABASE")
 HOST        = os.getenv("HOST")
 PG_PORT     = os.getenv("PG_PORT")
 API_TOKEN   = os.getenv('API_TOKEN')
-USER        = os.getenv('USER')
+USER        = os.getenv('DBUSER')
 PASSWORD    = os.getenv('PASSWORD')
 DEV_CONTACT = os.getenv('DEVELOPER_CONTACT')
+DBUSER = os.getenv('DBUSER')
 
 # for better perfomance
 GAME_LOST = -1
