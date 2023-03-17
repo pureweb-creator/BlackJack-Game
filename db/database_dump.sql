@@ -121,7 +121,7 @@ ALTER SEQUENCE public.parts_part_id_seq OWNED BY public.parts.part_id;
 --
 
 CREATE TABLE public.users (
-    id integer NOT NULL,
+    id SERIAL NOT NULL,
     user_id integer,
     balance real DEFAULT 100,
     is_game boolean,
