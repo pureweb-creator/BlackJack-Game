@@ -2,7 +2,7 @@
 
 Just a simple card game telegram bot.
 
-## **How to launch bot in your PC**
+## **How to launch this bot in your PC**
 If you decided to launch this bot in your local machine, you should necessairly posess a **PostgreSQL** database and telegram bot token.
 To get token you should create bot via [@BotFather](https://t.me/BotFather) bot. Don't loose this token.
 
@@ -17,16 +17,14 @@ or ssh ```git@github.com:pureweb-creator/BlackJack-Game.git```<br>
 Go to ```config.py``` file and replace constants by yours.<br>
 ```python
 DATABASE = "dbname" # database  name
-HOST = "hostname" # host namae
-PORT = "port" # for example 5432
+HOST = "hostname" # for localhost is 127.0.0.1
+PORT = "port" # default for postgresql is 5432
 API_TOKEN = "BOT TOKEN" # telegram bot token
-USER = "db_user_name" # database user name
+DBUSER = "db_user_name" # database user name
 PASSWORD = "db_user_password" # database password
 ```
 ### Step 3
-Run the following command<br><br>
-```python db/schema.py```<br><br>
-It will create basic structure and seeds default data in your database.<br>
+Use ```db/database_dump.sql``` file to create your database and tables. Simply paste that SQL commands into your postgresql console. First command creates a  database, second creates table.<br><br>
 
 ### Step 4
 Install dependencies required to run bot<br><br>
@@ -47,7 +45,7 @@ in your console, it is regarded to success, bot works correctly.
 
 **That's all!**
 
-## Info
+## Credits info
 
 **Technology:**
 - Python 3.10
@@ -59,6 +57,5 @@ in your console, it is regarded to success, bot works correctly.
 - [x] Some statistics for player
 - [x] dynamic bet
 - [ ] referal system
-- [ ] p2p game
 
 >*Check issues for more information*

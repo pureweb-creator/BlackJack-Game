@@ -11,7 +11,6 @@ API_TOKEN   = os.getenv('API_TOKEN')
 USER        = os.getenv('DBUSER')
 PASSWORD    = os.getenv('PASSWORD')
 DEV_CONTACT = os.getenv('DEVELOPER_CONTACT')
-DBUSER = os.getenv('DBUSER')
 
 # for better perfomance
 GAME_LOST = -1

@@ -164,3 +164,4 @@ static/images/*.webp
 *.webp
 db.db
 backup/
+BlackJack-Game.code-workspace

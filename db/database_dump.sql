@@ -1,4 +1,4 @@
-CREATE DATABASE d2vvds8i9hqjdi WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
+CREATE DATABASE my_db_name WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
 
 CREATE TABLE public.users (
     id SERIAL NOT NULL,
