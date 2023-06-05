@@ -11,7 +11,7 @@ class DBh:
         self.host = host
         self.port = port
         
-        self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port, sslmode='require')
+        self.connection = psycopg2.connect(database=self.database, user=self.user, password=self.password, host=self.host, port=self.port)
         self.connection.autocommit = True
         self.cursor = self.connection.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
         

@@ -1,0 +1,7 @@
+.git
+.github
+Dockerfile
+**/__pycache__
+static/images/*.webp
+BlackJack-Game.code-workspace
+postgres-data

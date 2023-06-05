@@ -1,6 +1,4 @@
-CREATE DATABASE my_db_name WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE = 'en_US.UTF-8';
-
-CREATE TABLE public.users (
+   CREATE TABLE users (
     id SERIAL NOT NULL,
     user_id integer,
     balance real DEFAULT 100,

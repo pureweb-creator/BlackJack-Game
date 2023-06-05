@@ -165,3 +165,4 @@ static/images/*.webp
 db.db
 backup/
 BlackJack-Game.code-workspace
+postgres-data
