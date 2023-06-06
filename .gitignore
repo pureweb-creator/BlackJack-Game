@@ -162,7 +162,6 @@ cython_debug/
 # custom
 static/images/*.webp
 *.webp
-db.db
-backup/
+backup
 BlackJack-Game.code-workspace
 postgres-data
