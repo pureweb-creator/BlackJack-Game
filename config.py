@@ -4,12 +4,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # dbconnect info
-DATABASE    = os.getenv("DATABASE")
+DATABASE    = os.getenv("POSTGRES_DB")
 HOST        = os.getenv("HOST")
 PG_PORT     = os.getenv("PG_PORT")
 API_TOKEN   = os.getenv('API_TOKEN')
-USER        = os.getenv('USER')
-PASSWORD    = os.getenv('PASSWORD')
+USER        = os.getenv('POSTGRES_USER')
+PASSWORD    = os.getenv('POSTGRES_PASSWORD')
 DEV_CONTACT = os.getenv('DEVELOPER_CONTACT')
 
 # for better perfomance

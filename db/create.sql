@@ -1,4 +1,4 @@
-   CREATE TABLE users (
+CREATE TABLE users (
     id SERIAL NOT NULL,
     user_id integer,
     balance real DEFAULT 100,

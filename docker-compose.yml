@@ -8,22 +8,22 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./:/app
-    container_name: blackjack_bot
+    container_name: bj-app
     depends_on:
       - db
   db:
     image: postgres:latest
     restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
     build: 
       context: .
       dockerfile: db/Dockerfile
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d
-    environment:
-      POSTGRES_PASSWORD: 123
-      POSTGRES_USER: postgres
-      POSTGRES_DB: bjdb
     ports:
       - 5431:5432
-    container_name: blackjack_bot_db
+    container_name: bj-postgres
